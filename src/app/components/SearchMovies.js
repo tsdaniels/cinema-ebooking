@@ -8,6 +8,8 @@ export default function SearchMovies() {
     const [nowPlaying, setNowPlaying] = useState([]);
     const [comingSoon, setComingSoon] = useState([]);
     const [query, setQuery] = useState("");
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     const generateKey = (movie) => {
         const str = `${movie.title}`;
@@ -15,66 +17,65 @@ export default function SearchMovies() {
     };
 
     useEffect(() => {
-        console.log("did use effect trigger?");
         const fetchMovies = async () => {
+            setIsLoading(true);
             try {
-                console.log("test");
-                const response = await fetch("http://localhost:5000/api/movies/");
-                if(!response) {
+                // Using relative URL for Next.js API route instead of hardcoded localhost
+                const response = await fetch("/api/movies");
+                
+                if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
+                
                 const data = await response.json();
                 console.log("Fetched movies:", data);
                 setMovies(data);
+                
+                // Automatically categorize movies on initial load
+                categorizeMovies(data);
+                setError(null);
             } catch(error) {
                 console.error("Error fetching movies: ", error);
+                setError("Failed to load movies. Please try again later.");
+            } finally {
+                setIsLoading(false);
             }
-
-            
         };
+        
         fetchMovies();
     }, []);
 
-          function categorizeMovies(movies) {
-
-            const nowPlayingMovies = [];
-            const comingSoonMovies = [];
-            
-            movies.forEach((movie) => {
-                
-                if(movie.status == "showing_now") {
-                    nowPlayingMovies.push(movie)
-                } else {
-                    comingSoonMovies.push(movie);
-                }
-            });
-
-            setNowPlaying(nowPlayingMovies);
-            setComingSoon(comingSoonMovies);
-
-          }
-
-          async function handleSearch(e) {
-            e.preventDefault();
-            const filteredMovies = movies.filter(movie => movie.title.toLowerCase().includes(query.toLowerCase()));
-            if(query.trim() === "") {
-                setNowPlaying([]);
-                setComingSoon([]);
-                return;
-            }
-            if (filteredMovies.length == 0) {
-                setNowPlaying([]);
-                setComingSoon([]);
+    function categorizeMovies(moviesToCategorize) {
+        const nowPlayingMovies = [];
+        const comingSoonMovies = [];
+        
+        moviesToCategorize.forEach((movie) => {
+            if(movie.status === "showing_now") {
+                nowPlayingMovies.push(movie);
             } else {
-                categorizeMovies(filteredMovies);
+                comingSoonMovies.push(movie);
             }
-            
-          }
-         
+        });
 
-    
-    
+        setNowPlaying(nowPlayingMovies);
+        setComingSoon(comingSoonMovies);
+    }
 
+    async function handleSearch(e) {
+        e.preventDefault();
+        
+        if(query.trim() === "") {
+            // Reset to show all movies when search is cleared
+            categorizeMovies(movies);
+            return;
+        }
+        
+        const filteredMovies = movies.filter(movie => 
+            movie.title.toLowerCase().includes(query.toLowerCase())
+        );
+        
+        categorizeMovies(filteredMovies);
+    }
     
     return (
         <div className="relative w-full min-h-screen bg-gradient-to-br from-black via-red-950 to-red-900 overflow-hidden">
@@ -99,51 +100,72 @@ export default function SearchMovies() {
                         type="submit"
                         className="px-4 bg-black h-10 text-white rounded-md hover:bg-red-800 transition-colors"
                     >
-                       
+                        Search
                     </button>
                 </form>
-                {movies.length > 0 && (
-                    <div className="mb-8">
-                        <h2 className="text-2xl font-bold mb-4">All movies</h2>
-                        <div className="flex flex-wrap gap-6 justify-center">
-                            {movies.map(movie => (
-                                <MovieCard  
-                                key={generateKey(movie)}
-                                    title={movie.title}
-                                    trailerUrl={movie.trailerUrl}
-                                    status={movie.status}
-                                   
-                                />
-                            ))}
+
+                {isLoading ? (
+                    <div className="text-center py-8">
+                        <p>Loading movies...</p>
+                    </div>
+                ) : error ? (
+                    <div className="text-center py-8 text-red-400">
+                        <p>{error}</p>
+                    </div>
+                ) : (
+                    <>
+                        <div className="mb-8">
+                            <h2 className="text-2xl font-bold mb-4">All Movies</h2>
+                            <div className="flex flex-wrap gap-6 justify-center">
+                                {movies.length > 0 ? (
+                                    movies.map(movie => (
+                                        <MovieCard
+                                            key={generateKey(movie)}
+                                            title={movie.title}
+                                            trailerUrl={movie.trailerUrl}
+                                        />
+                                    ))
+                                ) : (
+                                    <p>No movies found</p>
+                                )}
+                            </div>
                         </div>
-                    </div>
+
+                        <div className="mb-8">
+                            <h2 className="text-2xl font-bold mb-4">Showing Now</h2>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {nowPlaying.length > 0 ? (
+                                    nowPlaying.map(movie => (
+                                        <MovieCard
+                                            key={generateKey(movie)}
+                                            title={movie.title}
+                                            trailerUrl={movie.trailerUrl}
+                                        />
+                                    ))
+                                ) : (
+                                    <p>No movies currently showing</p>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="mb-8">
+                            <h2 className="text-2xl font-bold mb-4">Coming Soon</h2>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {comingSoon.length > 0 ? (
+                                    comingSoon.map(movie => (
+                                        <MovieCard
+                                            key={generateKey(movie)}
+                                            title={movie.title}
+                                            trailerUrl={movie.trailerUrl}
+                                        />
+                                    ))
+                                ) : (
+                                    <p>No upcoming movies</p>
+                                )}
+                            </div>
+                        </div>
+                    </>
                 )}
-                <div className="mb-8">
-                    <h2 className="text-2xl font-bold mb-4">Showing Now</h2>
-                    <div className="grid grid-cols-1 md:grid-cols2 lg:grid-cols-3 gap4">
-                    {nowPlaying.map(movie => (
-                                <MovieCard 
-                                    key={generateKey(movie)}
-                                    title={movie.title}
-                                    trailerUrl={movie.trailerUrl}
-                                    status={movie.status}
-                                    
-                                />
-                            ))}
-                    </div>
-                </div>
-                <div className="mb-8">
-                    <h2 className="text-2xl font-bold mb-4">Coming Soon</h2>
-                    <div className="grid grid-cols-1 md:grid-cols2 lg:grid-cols-3 gap4">
-                    {comingSoon.map(movie => (
-                                <MovieCard   
-                                    title={movie.title}
-                                    trailerUrl={movie.trailerUrl}
-                                />
-                            ))}
-                    </div>
-                </div>
-                
             </div>
         </div>
     );
