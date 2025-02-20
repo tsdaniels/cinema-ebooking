@@ -1,7 +1,12 @@
+'use client'
 import Image from "next/image";
 import './page.css';
+import { useRouter } from 'next/navigation';
 
 export default function HeroSectionHomePage() {
+  
+  const router = useRouter();
+
   return (
     <div className="relative h-screen w-full">
         {/** Movie trailers are going to go here */}
@@ -27,10 +32,14 @@ export default function HeroSectionHomePage() {
           <p className="text-lg mt-4">Experience movies like never before</p>
           {/** Login & Register button or Get tickets */}
           <div className="flex-col">
-            <button className=" mt-6 px-9 py-3 text-lg text-red-700 font-semibold shadow-lg border border-red-700 hover:before:bg-redborder-red-700 relative overflow-hidden transition-all before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-red-500 before:transition-all before:duration-500 hover:text-white hover:shadow-red-700 hover:before:left-0 hover:before:w-full group">
+            <button
+              onClick={() => router.push('/login')}
+              className=" mt-6 px-9 py-3 text-lg text-red-700 font-semibold shadow-lg border border-red-700 hover:before:bg-redborder-red-700 relative overflow-hidden transition-all before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-red-500 before:transition-all before:duration-500 hover:text-white hover:shadow-red-700 hover:before:left-0 hover:before:w-full group">
                 <span className="relative z-10 group-hover:text-white transition-colors duration-500">Login</span>
             </button>
-            <button className="ml-6 mt-6 px-6 py-3 text-lg text-red-700 font-semibold shadow-lg border border-red-700 hover:before:bg-redborder-red-700 relative overflow-hidden transition-all before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-red-500 before:transition-all before:duration-500 hover:text-white hover:shadow-red-700 hover:before:left-0 hover:before:w-full group">
+            <button 
+              onClick={() => router.push('/signup')}
+              className="ml-6 mt-6 px-6 py-3 text-lg text-red-700 font-semibold shadow-lg border border-red-700 hover:before:bg-redborder-red-700 relative overflow-hidden transition-all before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-red-500 before:transition-all before:duration-500 hover:text-white hover:shadow-red-700 hover:before:left-0 hover:before:w-full group">
                 <span className="relative z-10 group-hover:text-white transition-colors duration-500">Register</span>
             </button>
           </div>

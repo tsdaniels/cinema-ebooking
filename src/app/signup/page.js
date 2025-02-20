@@ -206,6 +206,10 @@ export default function Signup() {
                         <Link href="/login" className="font-medium text-red-600 hover:text-red-500">
                             Sign in here
                         </Link>
+                        <br></br>
+                        <Link href="/" className="font-medium text-red-600 hover:text-red-500">
+                            Back
+                        </Link>
                     </p>
                 </div>
             </div>
