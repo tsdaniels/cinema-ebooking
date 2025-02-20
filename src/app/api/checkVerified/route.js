@@ -15,13 +15,14 @@ export async function POST(request) {
         if (!user) {
             return NextResponse.json({
                 verified: false,
+                exists: false,
                 message: "User not found"
             });
         }
 
-
         return NextResponse.json({
             verified: user.verified,
+            exists: true,
             message: user.verified ? "User is verified" : "User is not verified"
         });
        

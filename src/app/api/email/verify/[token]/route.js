@@ -14,6 +14,8 @@ export async function GET(request, { params }) {
       verificationTokenExpires: { $gt: Date.now() }
     });
 
+    console.log(user);
+
     if (!user) {
       // Redirect to error page
       return NextResponse.redirect(new URL('/verification/error', request.url));

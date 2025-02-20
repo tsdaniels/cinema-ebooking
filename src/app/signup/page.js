@@ -83,7 +83,7 @@ export default function Signup() {
             if (response.ok && data.success) {
                 setSuccess('Signup successful! Redirecting...');
                 setTimeout(() => {
-                    router.push("/signupAccepted");
+                    router.push("/signup/signupAccepted");
                 }, 1500);
             } else {
                 setError(data.error || "Signup failed. Please try again.");

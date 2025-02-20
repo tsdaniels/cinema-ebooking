@@ -8,6 +8,7 @@ export default function Login() {
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
+    const [resend, setResend] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const router = useRouter();
 
@@ -39,6 +40,7 @@ export default function Login() {
             // Reset error and success messages
             setError("");
             setSuccess("");
+            setResend("");
 
             setIsLoading(true);
             
@@ -70,7 +72,8 @@ export default function Login() {
             }
 
             if (!isUserVerified) {
-                setError("Account has not yet been verified. Please check your inbox.");
+                setError("Account has not yet been verified.");
+                setResend("Account has not yet been verified.");
                 return;
             } else if (data.success) {
                 setSuccess('Login successful!');
@@ -110,7 +113,7 @@ export default function Login() {
 
                     {/* Error Message */}
                     {error && (
-                        <div className="mt-4 p-3 rounded-lg bg-red-50 text-red-700 border border-red-200">
+                        <div className="mt-4 p-3 rounded-lg bg-red-50 text-red-700 text-center border border-red-200">
                             {error}
                         </div>
                     )}
@@ -168,6 +171,16 @@ export default function Login() {
                                 Sign up here
                             </Link>
                         </p>
+
+                        {/* resend prompt */}
+                        {resend && (
+                            <div className="mt-4 p-3 rounded-lg bg-red-50 text-red-700 text-sm border border-red-200 text-center">
+                                <Link href="/verification/resend" className="font-medium text-red-600 hover:text-red-500">
+                                    Resend verification email
+                                </Link>
+                            </div>
+                        )}
+
                     </div>
                 </div>
             </div>

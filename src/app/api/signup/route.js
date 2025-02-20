@@ -56,7 +56,6 @@ export async function POST(request) {
 
         // Create verification link
         const verificationLink = `${process.env.NEXT_PUBLIC_APP_URL}/api/email/verify/${verificationToken}`;
-        console.log('Verification link:', verificationLink);
 
         // Send verification email
         await transporter.sendMail({
@@ -75,7 +74,7 @@ export async function POST(request) {
             success: true,
             message: "User created successfully! Please check your email for verification."
         }, { status: 201 });
-       
+        
     } catch (error) {
         console.error("Error creating user:", error);
         return NextResponse.json({

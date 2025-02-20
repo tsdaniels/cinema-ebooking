@@ -28,12 +28,6 @@ export default function VerificationSuccess() {
                             </Link>
                         </div>
                         
-                        <p className="mt-4 text-center text-sm text-gray-600">
-                            Need help?{' '}
-                            <Link href="/contact" className="font-medium text-red-600 hover:text-red-500">
-                                Contact Support
-                            </Link>
-                        </p>
                     </div>
                 </div>
             </div>
