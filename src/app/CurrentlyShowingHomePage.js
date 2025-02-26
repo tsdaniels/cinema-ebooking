@@ -1,6 +1,9 @@
+'use client';
 
+import { useRouter } from 'next/navigation';
 
 export default function Test () {
+    const router = useRouter();
     {/** Set Movies up here */}
     return(
         <div className="bg-gradient-to-b from-red-600 to-rose-800 text-center w-full h-screen">
@@ -30,7 +33,7 @@ export default function Test () {
                         </div>
                         <div className="p-4 bg-gray-50 border-t border-gray-200">
                             <div className="flex flex-wrap gap-2">
-                                <button className="px-3 py-1 bg-white border border-gray-300 rounded hover:bg-gray-100 transition-colors">
+                                <button onClick={() => router.push('/checkout')} className="px-3 py-1 bg-white border border-gray-300 rounded hover:bg-gray-100 transition-colors">
                                     Time
                                 </button>
                             </div>
