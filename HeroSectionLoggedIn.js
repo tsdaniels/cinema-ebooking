@@ -1,10 +1,12 @@
 import Image from "next/image";
-import HomePageNavbar from "./HomePageNavBar";
+import HomePageNavbar from "@/app/HomePageNavBar";
 
-export default function HeroSectionHomePage() {
+
+export default function HeroSectionLoggedIn() {
   return (
     <div className="relative h-screen w-full">
           
+      <HomePageNavbar />
         {/** Movie trailers are going to go here */}
       <div className="absolute inset-0 w-full h-full transition-opacity duration-1000 ease-in-out">
       <iframe className="w-full object-cover h-full"

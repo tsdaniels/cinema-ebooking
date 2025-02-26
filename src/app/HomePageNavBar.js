@@ -1,17 +1,14 @@
 import Image from "next/image";
 
 export default function HomePageNavbar() {
+  let defaultProfile = "https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg";
   return (
-    <nav className="items-center justify between pt-6 mx-auto">
-      <div className="">
-        <ul className="justify-center flex gap-6">
-          <li><a href="/" className="text-white relative text-xl w-fit block after:block after:content-[''] after:absolute after:h-[3px]">Logo</a></li>
-          <li><a href="/" className="relative text-xl w-fit block after:block after:content-[''] after:absolute after:h-[3px] after:bg-blue-500 after:w-full after:scale-x-0 after:hover:scale-x-100 after:transition after:duration-300 after:origin-center">Home</a></li>
-          <li><a href="/" className="relative text-xl w-fit block after:block after:content-[''] after:absolute after:h-[3px] after:bg-blue-500 after:w-full after:scale-x-0 after:hover:scale-x-100 after:transition after:duration-300 after:origin-center">Showing Now</a></li>
-          <li><a href="/" className="relative text-xl w-fit block after:block after:content-[''] after:absolute after:h-[3px] after:bg-blue-500 after:w-full after:scale-x-0 after:hover:scale-x-100 after:transition after:duration-300 after:origin-center">Coming Soon</a></li>
-          <li><a href="/" className="relative text-xl w-fit block after:block after:content-[''] after:absolute after:h-[3px] after:bg-blue-500 after:w-full after:scale-x-0 after:hover:scale-x-100 after:transition after:duration-300 after:origin-center">Register Now</a></li>
-          <li><a href="/" className="relative text-xl w-fit block after:block after:content-[''] after:absolute after:h-[3px] after:bg-blue-500 after:w-full after:scale-x-0 after:hover:scale-x-100 after:transition after:duration-300 after:origin-center">Login</a></li>
-        </ul>
+    <nav className="flex justify-center items-center z-50 fixed top-0 bg-gray-900 w-full h-[95px]">
+      <div className="ml-auto mr-10 bg-white w-[50px] h-[50px] rounded-full ">
+        <img className="object-cover rounded-full" alt="Profile" src={defaultProfile} />
+      <div className="cursor-pointer inset-0 text-sm text-black flex justify-center items-center absolute bg-opacity-0 hover:bg-opacity-50 inset-0 w-[50px] h-[50px] ml-auto mr-10 mt-5 rounded-full" >
+        <span className="opacity-0 hover:opacity-100">Edit</span>
+      </div>
       </div>
     </nav>
   );

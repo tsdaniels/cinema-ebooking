@@ -5,16 +5,15 @@ import HeroSectionHomePage from "./HeroSectionHomePage";
 import CurrentlyShowingHomePage from './CurrentlyShowingHomePage';
 import ComingSoon from './ComingSoon';
 import SearchMovies from "./SearchMovies";
-import Cards from './Cards';
 import CardsTwo from './CardsTwo';
+import HeroSectionLoggedIn from "../../HeroSectionLoggedIn";
 
-export default function Home() {
+export default function Home() {  
   return (
     <div>
-      <HeroSectionHomePage/>
-      <CurrentlyShowingHomePage/>
-      <ComingSoon/>
-      <SearchMovies/>
+      <HeroSectionHomePage />
+      <SearchMovies />
+      <ComingSoon />
     </div>
   );
 }

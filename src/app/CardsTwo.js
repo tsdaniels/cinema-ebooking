@@ -1,7 +1,10 @@
-import './CardsTwo.css';
+import MovieCard from './MovieCard';
 
-export default function CardsTwo(){
-    let src="https://m.media-amazon.com/images/M/MV5BOWMwYjYzYmMtMWQ2Ni00NWUwLTg2MzAtYzkzMDBiZDIwOTMwXkEyXkFqcGc@._V1_.jpg";
+export default function CardsTwo({ id, title, posterPath, releaseDate, rating }){
+    const baseImageUrl = "https://image.tmdb.org/t/p/w500";
+    const posterUrl = posterPath 
+        ? `${baseImageUrl}${posterPath}`
+        : "https://via.placeholder.com/300x500?text=No+Poster";
   return (
     <div className="ml-10 mt-10 relative">
         <div
@@ -14,7 +17,10 @@ export default function CardsTwo(){
         rounded-lg bg-white 
         text-slate-300"
         >
-            <img className="object-cover rounded-lg" src={src}/>
+          <div className='rounded-tl-lg rounded-tr-lg w-full absolute top-0 h-[50px] bg-red-600'>
+          <h1>{title}</h1>
+          </div>
+            <img className="object-cover rounded-lg" src={posterUrl}/>
             <div className="absolute bottom-0 
             bg-red-600 
             w-[300px] h-[50px]
@@ -26,6 +32,7 @@ export default function CardsTwo(){
             rounded-bl-lg rounded-br-lg
             border-t border-red-700
             ">test</div>
+            
         </div>
     </div>
 
