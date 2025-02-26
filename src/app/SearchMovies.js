@@ -103,7 +103,7 @@ export default function SearchMovies() {
                         <h2 className="text-2xl font-bold mb-4">Search Results</h2>
                         <div className="flex flex-wrap gap-6 justify-center">
                             {movies.map(movie => (
-                                <UhDiffCard
+                                <MovieCard
                                     key={movie.id}
                                     title={movie.title}
                                     posterPath={movie.poster_path}
