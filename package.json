@@ -9,9 +9,21 @@
     "lint": "next lint"
   },
   "dependencies": {
+<<<<<<< HEAD
     "lucide-react": "^0.475.0",
     "mongodb": "^6.13.1",
     "next": "^15.1.7",
+=======
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1",
+    "dotenv": "^16.4.7",
+    "jsonwebtoken": "^9.0.2",
+    "mongodb": "^6.13.0",
+    "mongoose": "^8.10.1",
+    "next": "15.1.7",
+    "nodemailer": "^6.10.0",
+>>>>>>> 8c6a5ab35ae0be1baf0e4b88bdaf0fa5323746a3
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
