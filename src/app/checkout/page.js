@@ -5,6 +5,7 @@ import { useState } from 'react';
 
 export default function ShowtimeSelection() {
   const router = useRouter();
+  const [isBlue, setIsBlue] = useState(false);
   const [selectedShowtime, setSelectedShowtime] = useState(null);
   const [tickets, setTickets] = useState({ adult: 0, child: 0, senior: 0 });
   const [selectedSeats, setSelectedSeats] = useState([]);
@@ -48,7 +49,7 @@ export default function ShowtimeSelection() {
         <div className="bg-black/90 border border-red-700 p-4 rounded-lg">
         <h2 className="text-xl font-bold">Select Tickets</h2>
         {Object.keys(tickets).map((type) => (
-            <div key={type} className="flex justify-between items-center my-2 text-lg">
+            <div key={type} className="flex justify-between items-center my-2 text-lg font-sans">
             <span>{type.charAt(0).toUpperCase() + type.slice(1)} Ticket</span>
 
             {/* Buttons to adjust ticket quantity */}
@@ -80,8 +81,9 @@ export default function ShowtimeSelection() {
         {/* Seat Selection */}
         <div className="bg-black/90 border border-red-700 p-4 rounded-lg">
           <h2 className="text-xl font-bold">Select Seats</h2>
-          <div className="grid grid-cols-5 gap-2 mt-3">
-            {Array.from({ length: 20 }, (_, i) => (
+          <div className=" text-2xl text-bold text-center font-sans bg-gray-500 rounded-lg p-2">Screen</div>
+          <div className="grid grid-cols-12 gap-2 mt-3">
+            {Array.from({ length: 48 }, (_, i) => (
               <button 
                 key={i} 
                 onClick={() => handleSeatSelection(i + 1)}
@@ -95,7 +97,13 @@ export default function ShowtimeSelection() {
 
         {/* Payment */}
         <div className="bg-black/90 border border-red-700 p-4 rounded-lg">
+          <div className="justify-between flex flex-row">
           <h2 className="text-xl font-bold">Payment</h2>
+          <button 
+            onClick={() => router.push('/')}
+            className="text-xl font-bold text-decoration-line: underline" > 
+            Choose Existing Card</button>
+          </div>
           <input
             type="text"
             placeholder="Card Number"
@@ -106,7 +114,7 @@ export default function ShowtimeSelection() {
             <div className="flex gap-2">
             <input
                 type="text"
-                placeholder="Expiry (MM/YY)"
+                placeholder="Expiration Date (MM/YY)"
                 className="border p-3 w-1/2 rounded-md bg-red-500 bg-opacity-10 text-white border-red-700 focus:border-red-500"
                 value={expiry}
                 onChange={(e) => setExpiry(e.target.value)}
@@ -124,7 +132,7 @@ export default function ShowtimeSelection() {
       
       {/* Right Section */}
       {/* Order Summary */}
-      <div className="w-1/3 bg-black/90 border border-red-700 p-6 rounded-lg">
+      <div className="w-1/3 bg-black/90 border border-red-700 p-6 rounded-lg mt-8">
         <h2 className="text-xl font-bold text-red-500">Order Summary</h2>
         <p>Showtime: {selectedShowtime || 'Not Selected'}</p>
         <h3 className="mt-3 font-semibold">Tickets</h3>
