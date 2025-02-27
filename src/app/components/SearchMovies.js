@@ -36,14 +36,13 @@ export default function SearchMovies() {
     }, []);
 
           function categorizeMovies(movies) {
-            const today = new Date;
 
             const nowPlayingMovies = [];
             const comingSoonMovies = [];
             
             movies.forEach((movie) => {
-                const releaseDate = new Date(movie.status);
-                if(releaseDate <= today) {
+                
+                if(movie.status == "showing_now") {
                     nowPlayingMovies.push(movie)
                 } else {
                     comingSoonMovies.push(movie);
@@ -120,8 +119,7 @@ export default function SearchMovies() {
                     <h2 className="text-2xl font-bold mb-4">Showing Now</h2>
                     <div className="grid grid-cols-1 md:grid-cols2 lg:grid-cols-3 gap4">
                     {nowPlaying.map(movie => (
-                                <MovieCard
-                                    
+                                <MovieCard  
                                     title={movie.title}
                                     trailerUrl={movie.trailerUrl}
                                 />
@@ -132,8 +130,7 @@ export default function SearchMovies() {
                     <h2 className="text-2xl font-bold mb-4">Coming Soon</h2>
                     <div className="grid grid-cols-1 md:grid-cols2 lg:grid-cols-3 gap4">
                     {comingSoon.map(movie => (
-                                <MovieCard
-                                    
+                                <MovieCard   
                                     title={movie.title}
                                     trailerUrl={movie.trailerUrl}
                                 />
