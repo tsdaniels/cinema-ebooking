@@ -40,6 +40,16 @@ export default function ManageMovies() {
     setSearchQuery(query);
     const results = await fetchMoviesFromDatabase(query);
     setSearchResults(results);
+
+    // Clear the search bar after search
+    setSearchQuery(''); // Clear search input after submitting
+  };
+
+  // Handle Enter key press for search
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSearch(searchQuery);
+    }
   };
 
   // Add movie to the manage list
@@ -67,7 +77,8 @@ export default function ManageMovies() {
           placeholder="Search for a movie..."
           className="w-full p-3 text-lg border border-gray-700 rounded-md bg-gray-900 text-white focus:outline-none focus:ring-2 focus:ring-red-500"
           value={searchQuery}
-          onChange={(e) => handleSearch(e.target.value)}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          onKeyDown={handleKeyPress} // Allow search on Enter key press
         />
       </div>
 
