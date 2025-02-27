@@ -3,7 +3,7 @@
 import { useState } from 'react';
 
 // Mock function to simulate database search (Replace with actual API call)
-async function fetchMoviesFromDatabase(query: string) {
+async function fetchMoviesFromDatabase(query) {
   if (!query) return [];
 
   // Simulated API response (Replace with actual fetch request)
@@ -36,7 +36,7 @@ export default function ManageMovies() {
   const [selectedMovies, setSelectedMovies] = useState([]);
 
   // Handle search and fetch movies from "database"
-  const handleSearch = async (query: string) => {
+  const handleSearch = async (query) => {
     setSearchQuery(query);
     const results = await fetchMoviesFromDatabase(query);
     setSearchResults(results);
@@ -46,7 +46,7 @@ export default function ManageMovies() {
   };
 
   // Handle Enter key press for search
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
       handleSearch(searchQuery);
     }
