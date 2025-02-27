@@ -6,24 +6,7 @@ import { useState } from 'react';
 async function fetchMoviesFromDatabase(query) {
   if (!query) return [];
 
-  // Simulated API response (Replace with actual fetch request)
-  const databaseMovies = [
-    { id: 1, title: 'Inception', director: 'Christopher Nolan', year: 2010 },
-    { id: 2, title: 'Interstellar', director: 'Christopher Nolan', year: 2014 },
-    {
-      id: 3,
-      title: 'The Dark Knight',
-      director: 'Christopher Nolan',
-      year: 2008,
-    },
-    { id: 4, title: 'Dune', director: 'Denis Villeneuve', year: 2021 },
-    {
-      id: 5,
-      title: 'Blade Runner 2049',
-      director: 'Denis Villeneuve',
-      year: 2017,
-    },
-  ];
+  
 
   return databaseMovies.filter((movie) =>
     movie.title.toLowerCase().includes(query.toLowerCase())
@@ -31,6 +14,63 @@ async function fetchMoviesFromDatabase(query) {
 }
 
 export default function ManageMovies() {
+  let id = 1;
+  const [newMovie, setNewMovie] = useState({
+    title: '',
+    trailerUrl: '',
+    status: '',
+  });
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewMovie((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleAddMovie = async () => {
+    if (!newMovie.title || !newMovie.trailerUrl || !newMovie.status) {
+      alert('Please fill in all fields.');
+      return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:5000/api/movies/add", {
+        method: 'POST', 
+        headers: {
+          'Content-Type': 'application/json',
+        }, 
+        body: JSON.stringify(newMovie),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to add movie");
+      }
+
+      const data = await response.json();
+      console.log("Movie added successfully", data);
+
+      setNewMovie({
+        title: '',
+        trailerUrl: '',
+        status: '',
+      });
+
+      alert("Movie added successfully!");
+    } catch (error) {
+      console.error("Error adding movie:", error);
+      alert("Failed to add movie. Please try again");
+    }
+
+    setSelectedMovies((prevMovies) => [
+      ...prevMovies,
+      {...newMovie, id: id},
+      id++,
+    ]);
+
+  };
+
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [selectedMovies, setSelectedMovies] = useState([]);
@@ -40,22 +80,12 @@ export default function ManageMovies() {
     setSearchQuery(query);
     const results = await fetchMoviesFromDatabase(query);
     setSearchResults(results);
-
-    // Clear the search bar after search
-    setSearchQuery(''); // Clear search input after submitting
   };
 
   // Handle Enter key press for search
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
       handleSearch(searchQuery);
-    }
-  };
-
-  // Add movie to the manage list
-  const handleAddMovie = (movie) => {
-    if (!selectedMovies.some((m) => m.id === movie.id)) {
-      setSelectedMovies([...selectedMovies, movie]);
     }
   };
 
@@ -70,16 +100,44 @@ export default function ManageMovies() {
         🎬 Manage Movies
       </h1>
 
-      {/* Search Bar */}
+      {/* Add New Movie */}
       <div className="w-full max-w-lg mb-6">
-        <input
-          type="text"
-          placeholder="Search for a movie..."
-          className="w-full p-3 text-lg border border-gray-700 rounded-md bg-gray-900 text-white focus:outline-none focus:ring-2 focus:ring-red-500"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          onKeyDown={handleKeyPress} // Allow search on Enter key press
-        />
+        <h2 className="text-xl font-bold mb-4 text-red-400">➕ Add New Movie</h2>
+        <div className="space-y-4">
+          <input
+            type="text"
+            name="title"
+            placeholder="Movie Title"
+            value={newMovie.title}
+            onChange={handleInputChange}
+            className="w-full p-3 text-lg border border-gray-700 rounded-md bg-gray-900 text-white focus:outline-none focus:ring-2 focus:ring-red-500"
+            required
+          />
+          <input
+            type="text"
+            name="trailerUrl"
+            placeholder="Trailer URL"
+            value={newMovie.trailerUrl}
+            onChange={handleInputChange}
+            className="w-full p-3 text-lg border border-gray-700 rounded-md bg-gray-900 text-white focus:outline-none focus:ring-2 focus:ring-red-500"
+            required
+          />
+          <input
+            type="text"
+            name="status"
+            placeholder='showing_now or coming_soon'
+            value={newMovie.status}
+            onChange={handleInputChange}
+            className="w-full p-3 text-lg border border-gray-700 rounded-md bg-gray-900 text-white focus:outline-none focus:ring-2 focus:ring-red-500"
+            required
+          />
+          <button
+            onClick={handleAddMovie}
+            className="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md"
+          >
+            Add Movie
+          </button>
+        </div>
       </div>
 
       {/* Search Results */}
@@ -100,7 +158,7 @@ export default function ManageMovies() {
                 </p>
               </div>
               <button
-                onClick={() => handleAddMovie(movie)}
+                onClick={() => setSelectedMovies([...selectedMovies, movie])}
                 className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md"
               >
                 ➕ Add

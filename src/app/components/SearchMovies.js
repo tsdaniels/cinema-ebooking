@@ -107,9 +107,12 @@ export default function SearchMovies() {
                         <h2 className="text-2xl font-bold mb-4">All movies</h2>
                         <div className="flex flex-wrap gap-6 justify-center">
                             {movies.map(movie => (
-                                <MovieCard    
+                                <MovieCard  
+                                key={generateKey(movie)}
                                     title={movie.title}
                                     trailerUrl={movie.trailerUrl}
+                                    status={movie.status}
+                                   
                                 />
                             ))}
                         </div>
@@ -119,9 +122,12 @@ export default function SearchMovies() {
                     <h2 className="text-2xl font-bold mb-4">Showing Now</h2>
                     <div className="grid grid-cols-1 md:grid-cols2 lg:grid-cols-3 gap4">
                     {nowPlaying.map(movie => (
-                                <MovieCard  
+                                <MovieCard 
+                                    key={generateKey(movie)}
                                     title={movie.title}
                                     trailerUrl={movie.trailerUrl}
+                                    status={movie.status}
+                                    
                                 />
                             ))}
                     </div>
