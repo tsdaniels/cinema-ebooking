@@ -74,24 +74,64 @@ export default function ManageMovies() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [selectedMovies, setSelectedMovies] = useState([]);
+  const [newMovie, setNewMovie] = useState({
+    title: '',
+    director: '',
+    year: '',
+  });
 
-  // Handle search and fetch movies from "database"
+  // handle search and fetch movies from "database"
   const handleSearch = async (query) => {
     setSearchQuery(query);
     const results = await fetchMoviesFromDatabase(query);
     setSearchResults(results);
+<<<<<<< HEAD
+=======
+    setSearchQuery(''); // clears search
+>>>>>>> a9db284f2f4e99a566750488e45a47bade93b02a
   };
 
-  // Handle Enter key press for search
+  // handle enter key press for search
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
       handleSearch(searchQuery);
     }
   };
 
+<<<<<<< HEAD
   // Remove movie from the manage list
+=======
+  // add movie to manage list
+  const handleAddMovie = (movie) => {
+    if (!selectedMovies.some((m) => m.title === movie.title)) {
+      setSelectedMovies([...selectedMovies, movie]);
+    }
+  };
+
+  //remove movie from the pagee
+>>>>>>> a9db284f2f4e99a566750488e45a47bade93b02a
   const handleDeleteMovie = (id) => {
     setSelectedMovies(selectedMovies.filter((movie) => movie.id !== id));
+  };
+
+  // handle new movie input change
+  const handleNewMovieChange = (e) => {
+    setNewMovie({ ...newMovie, [e.target.name]: e.target.value });
+  };
+
+  // handles adding a completely different movie
+  const handleAddNewMovie = () => {
+    if (!newMovie.title || !newMovie.director || !newMovie.year) return;
+
+    const newMovieEntry = {
+      id: Date.now(), // temporary unique id
+      title: newMovie.title,
+      director: newMovie.director,
+      year: newMovie.year,
+    };
+
+    handleAddMovie(newMovieEntry);
+    setNewMovie({ title: '', director: '', year: '' }); // Reset form
   };
 
   return (
@@ -102,6 +142,7 @@ export default function ManageMovies() {
 
       {/* Add New Movie */}
       <div className="w-full max-w-lg mb-6">
+<<<<<<< HEAD
         <h2 className="text-xl font-bold mb-4 text-red-400">➕ Add New Movie</h2>
         <div className="space-y-4">
           <input
@@ -138,6 +179,16 @@ export default function ManageMovies() {
             Add Movie
           </button>
         </div>
+=======
+        <input
+          type="text"
+          placeholder="Search for a movie..."
+          className="w-full p-3 text-lg border border-gray-700 rounded-md bg-gray-900 text-white focus:outline-none focus:ring-2 focus:ring-red-500"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          onKeyDown={handleKeyPress}
+        />
+>>>>>>> a9db284f2f4e99a566750488e45a47bade93b02a
       </div>
 
       {/* Search Results */}
@@ -167,6 +218,43 @@ export default function ManageMovies() {
           ))}
         </div>
       )}
+
+      {/* Add New Movie Section */}
+      <div className="w-full max-w-lg mt-8 p-6 bg-gray-900 rounded-md shadow-lg border border-gray-800">
+        <h2 className="text-xl font-bold text-red-400 mb-4">
+          ➕ Add New Movie
+        </h2>
+        <input
+          type="text"
+          name="title"
+          placeholder="Movie Title"
+          className="w-full p-2 mb-2 text-lg border border-gray-700 rounded-md bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-red-500"
+          value={newMovie.title}
+          onChange={handleNewMovieChange}
+        />
+        <input
+          type="text"
+          name="director"
+          placeholder="Director"
+          className="w-full p-2 mb-2 text-lg border border-gray-700 rounded-md bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-red-500"
+          value={newMovie.director}
+          onChange={handleNewMovieChange}
+        />
+        <input
+          type="number"
+          name="year"
+          placeholder="Year"
+          className="w-full p-2 mb-4 text-lg border border-gray-700 rounded-md bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-red-500"
+          value={newMovie.year}
+          onChange={handleNewMovieChange}
+        />
+        <button
+          onClick={handleAddNewMovie}
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md"
+        >
+          Add Movie
+        </button>
+      </div>
 
       {/* Selected Movies List */}
       <div className="w-full max-w-4xl mt-8">
