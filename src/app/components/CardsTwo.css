@@ -1,0 +1,28 @@
+@keyframes gradient-xy {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  
+  .animate-gradient-xy {
+    animation: gradient-xy 15s ease infinite;
+    background-size: 400% 400%;
+  }
+  
+  .animate-gradient-xy-fast {
+    animation: gradient-xy 8s ease infinite;
+    background-size: 400% 400%;
+  }
+
+@keyframes pullUp {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.pull-up-animation {
+    animation: pullUp 0.5s ease-out forwards;
+}
