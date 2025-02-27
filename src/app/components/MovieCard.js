@@ -1,11 +1,8 @@
 import MovieCard from './MovieCard';
 
-export default function CardsTwo({ id, title, posterPath, releaseDate, rating }){
+export default function CardsTwo({ title, trailerUrl}){
     const baseImageUrl = "https://image.tmdb.org/t/p/w500";
-    const posterUrl = posterPath 
-        ? `${baseImageUrl}${posterPath}`
-        : "https://via.placeholder.com/300x500?text=No+Poster";
-
+    
     return (
         <div className="group relative overflow-hidden
         rounded-xl bg-black/30 backdrop-blur-md border border-red-500/20 
@@ -16,12 +13,11 @@ export default function CardsTwo({ id, title, posterPath, releaseDate, rating })
                 <span className="text-sm text-red-400 font-medium">Release Date</span>
             </div>
             <div className="aspect-video relative">
-                <img 
-                    src={posterUrl}
-                    alt={title}
-                    className="absolute w-full h-full object-cover opacity-80 
-                    group-hover:opacity-100 transition-opacity duration-300"
-                />
+                <iframe
+                    className='w-[full] h-[100px]'
+                    src={trailerUrl}
+                    allowFullScreen
+                ></iframe>
 
             </div>
         </div>

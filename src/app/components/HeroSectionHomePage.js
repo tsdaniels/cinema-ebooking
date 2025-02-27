@@ -1,11 +1,7 @@
 'use client'
 import Image from "next/image";
-<<<<<<< HEAD
 import HomePageNavbar from "./HomePageNavBar";
-=======
-import './page.css';
 import { useRouter } from 'next/navigation';
->>>>>>> 8c6a5ab35ae0be1baf0e4b88bdaf0fa5323746a3
 
 export default function HeroSectionHomePage() {
   

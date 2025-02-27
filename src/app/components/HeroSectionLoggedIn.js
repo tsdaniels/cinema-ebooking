@@ -1,5 +1,5 @@
 import Image from "next/image";
-import HomePageNavbar from "@/app/HomePageNavBar";
+import HomePageNavbar from "@/app/components/HomePageNavBar";
 
 
 export default function HeroSectionLoggedIn() {

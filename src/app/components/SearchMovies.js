@@ -1,38 +1,40 @@
 "use client"
 import { useState, useEffect } from "react";
-import MovieCard from "./MovieCard";    
+import MovieCard from "./MovieCard";  
+import CryptoJS from "crypto-js";  
 
 export default function SearchMovies() {
-    const [query, setQuery] = useState("");
     const [movies, setMovies] = useState([]);
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState(null);
     const [nowPlaying, setNowPlaying] = useState([]);
     const [comingSoon, setComingSoon] = useState([]);
-    const baseUrl = `//api.themoviedb.org/3/search/movie?query=${query}`;
-    const API_KEY = "75989dc6f2f4cf7c3894ce992a4c7b61";
+    const [query, setQuery] = useState("");
 
-    async function fetchMovies(query) {
-        const options = {
-            method: 'GET',
-            headers: {
-              accept: 'application/json',
-              Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI3NTk4OWRjNmYyZjRjZjdjMzg5NGNlOTkyYTRjN2I2MSIsIm5iZiI6MTczOTg4NTQ3MS45NTgwMDAyLCJzdWIiOiI2N2I0OGI5ZjkxZDdlNjZjNjU2ZGQzYjEiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.TRM6V8S26KrfwCnr4vz5gBwSPkekZms0qkJ8ZZUlZ2c'
+    const generateKey = (movie) => {
+        const str = `${movie.title}`;
+        return CryptoJS.MD5(str).toString();
+    };
+
+    useEffect(() => {
+        console.log("did use effect trigger?");
+        const fetchMovies = async () => {
+            try {
+                console.log("test");
+                const response = await fetch("http://localhost:5000/api/movies/");
+                if(!response) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                const data = await response.json();
+                console.log("Fetched movies:", data);
+                setMovies(data);
+            } catch(error) {
+                console.error("Error fetching movies: ", error);
             }
-          };
 
-          try {
-            const response = await fetch(`https://api.themoviedb.org/3/search/movie?query=${query}&include_adult=false&language=en-US&page=1&api_key=${API_KEY}`, options);
-            const data = await response.json();
-            const movieTitles = data.results.map(movie => movie.title);
-            console.log(movieTitles);
-            return data.results || [];
-          } catch (error) {
-            console.log("Error fetching movies", error);
-            return [];
-          }
+            
+        };
+        fetchMovies();
+    }, []);
 
-        }
           function categorizeMovies(movies) {
             const today = new Date;
 
@@ -40,7 +42,7 @@ export default function SearchMovies() {
             const comingSoonMovies = [];
             
             movies.forEach((movie) => {
-                const releaseDate = new Date(movie.release_date);
+                const releaseDate = new Date(movie.status);
                 if(releaseDate <= today) {
                     nowPlayingMovies.push(movie)
                 } else {
@@ -55,8 +57,19 @@ export default function SearchMovies() {
 
           async function handleSearch(e) {
             e.preventDefault();
-            const movies = await fetchMovies(query);
-            categorizeMovies(movies);
+            const filteredMovies = movies.filter(movie => movie.title.toLowerCase().includes(query.toLowerCase()));
+            if(query.trim() === "") {
+                setNowPlaying([]);
+                setComingSoon([]);
+                return;
+            }
+            if (filteredMovies.length == 0) {
+                setNowPlaying([]);
+                setComingSoon([]);
+            } else {
+                categorizeMovies(filteredMovies);
+            }
+            
           }
          
 
@@ -86,29 +99,18 @@ export default function SearchMovies() {
                     <button 
                         type="submit"
                         className="px-4 bg-black h-10 text-white rounded-md hover:bg-red-800 transition-colors"
-                        disabled={isLoading}
                     >
-                        {isLoading ? 'Searching...' : 'Search'}
+                       
                     </button>
                 </form>
-
-                {error && ( 
-                    <div className="text-red-400 text-center mb-4">
-                        {error}
-                    </div>
-                )}
-
                 {movies.length > 0 && (
                     <div className="mb-8">
-                        <h2 className="text-2xl font-bold mb-4">Search Results</h2>
+                        <h2 className="text-2xl font-bold mb-4">All movies</h2>
                         <div className="flex flex-wrap gap-6 justify-center">
                             {movies.map(movie => (
-                                <MovieCard
-                                    key={movie.id}
+                                <MovieCard    
                                     title={movie.title}
-                                    posterPath={movie.poster_path}
-                                    releaseDate={movie.release_date}
-                                    rating={movie.vote_average}
+                                    trailerUrl={movie.trailerUrl}
                                 />
                             ))}
                         </div>
@@ -119,11 +121,9 @@ export default function SearchMovies() {
                     <div className="grid grid-cols-1 md:grid-cols2 lg:grid-cols-3 gap4">
                     {nowPlaying.map(movie => (
                                 <MovieCard
-                                    key={movie.id}
+                                    
                                     title={movie.title}
-                                    posterPath={movie.poster_path}
-                                    releaseDate={movie.release_date}
-                                    rating={movie.vote_average}
+                                    trailerUrl={movie.trailerUrl}
                                 />
                             ))}
                     </div>
@@ -133,11 +133,9 @@ export default function SearchMovies() {
                     <div className="grid grid-cols-1 md:grid-cols2 lg:grid-cols-3 gap4">
                     {comingSoon.map(movie => (
                                 <MovieCard
-                                    key={movie.id}
+                                    
                                     title={movie.title}
-                                    posterPath={movie.poster_path}
-                                    releaseDate={movie.release_date}
-                                    rating={movie.vote_average}
+                                    trailerUrl={movie.trailerUrl}
                                 />
                             ))}
                     </div>
