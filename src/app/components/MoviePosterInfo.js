@@ -30,7 +30,7 @@ export default function MoviePoster({src}){
             items-center
             shadow-lg
             ">
-                <a href=""><p className="ml-4 mt-2 text-center">Book Tickets</p></a>
+                <a href="/checkout"><p className="ml-4 mt-2 text-center">Book Tickets</p></a>
             </div>
         </div>
     </div>
