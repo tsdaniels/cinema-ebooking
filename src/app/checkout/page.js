@@ -32,7 +32,7 @@ export default function ShowtimeSelection() {
   };
 
   return (
-    <div className="flex bg-gradient-to-b from-red-600 to-rose-800 text-white h-screen p-6 gap-6 pt-6">
+    <div className="flex bg-gradient-to-br from-black via-red-950 to-red-900 text-white h-screen p-6 gap-6 pt-6">
       {/* Left Section */}
       <div className="flex flex-col w-2/3 gap-6">
       <h1 className="text-4xl font-bold text-white">Checkout 🛒</h1>
@@ -149,12 +149,32 @@ export default function ShowtimeSelection() {
                 <p className="text-lg mt-2">🎬 Musical/Fantasy | ⏰ 2 hr 40 min</p>
             </div>
         </div>
+        {/* Promo code functionality not implemented */}
+        <div className="flex gap-6 items-center border-b border-gray-700 pb-6">
+            <h2 className='mt-3'>Promo Code
+              <input className="mt-3 ml-3 border w-1/2 p-1 rounded-md bg-red-500 bg-opacity-10 border-red-700 focus:border-red-500"></input>
+              <button className='ml-3 px-3 py-1 bg-red-700 text-white rounded-md'>Add</button>
+              <h3 className='mt-1 text-gray-400 text-sm'>*May not be combined with other offers.</h3>
+            </h2>
+        </div>
         
         <h3 className="mt-3 font-bold">Total: ${totalPrice.toFixed(2)}</h3>
         <button 
-            onClick={() => router.push('/checkoutSuccess')}
-            className="mt-6 px-6 py-3 text-lg text-green-600 font-semibold shadow-lg border border-green-600 hover:before:bg-green-600 relative overflow-hidden transition-all before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-green-600 before:transition-all before:duration-500 hover:text-white hover:shadow-green-600 hover:before:left-0 hover:before:w-full group w-full rounded">
-            <span className="relative z-10">Pay Now</span>
+          onClick={() => {
+            const orderData = {
+              movieTitle: 'Wicked', 
+              showtime: selectedShowtime,
+              tickets,
+              selectedSeats,
+              ticketPrices,
+              totalPrice,
+            };
+            localStorage.setItem('orderDetails', JSON.stringify(orderData));
+            router.push('/checkoutSuccess');
+          }}
+          className="mt-6 px-6 py-3 text-lg text-green-600 font-semibold shadow-lg border border-green-600 hover:before:bg-green-600 relative overflow-hidden transition-all before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-green-600 before:transition-all before:duration-500 hover:text-white hover:shadow-green-600 hover:before:left-0 hover:before:w-full group w-full rounded"
+        >
+          <span className="relative z-10">Pay Now</span>
         </button>
         <button 
           onClick={() => router.push('/')} 
