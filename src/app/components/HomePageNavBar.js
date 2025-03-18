@@ -69,6 +69,15 @@ export default function HomePageNavbar() {
     }
   }
 
+  const handleLogout = () => {
+    // Clear any authentication tokens or user data here.
+    // For example, remove token from local storage or cookies:
+    localStorage.removeItem("authToken"); // example
+
+    // Redirect to the login page after logging out
+    router.push("/login"); // Redirect to login page
+  };
+
   return (
     <nav className="flex justify-center items-center z-50 fixed top-0 bg-red-900 w-full h-[95px]">
       <div className="text-white text-4xl ml-4 font-semibold">Cinebook🍿</div>
@@ -91,8 +100,7 @@ export default function HomePageNavbar() {
         </div>
       <div
         className="relative bg-white w-[50px] h-[50px] rounded-full cursor-pointer ml-10 mr-4"
-        onMouseEnter={() => setDropdownVisible(true)}
-        onMouseLeave={() => setDropdownVisible(false)}
+        onClick={() => setDropdownVisible((prev) => !prev)}
       >
         <img className="object-cover rounded-full w-full h-full" alt="Profile" src={defaultProfile} />
         
@@ -103,6 +111,11 @@ export default function HomePageNavbar() {
               <li>
                 <button onClick={() => router.push('/editProfile')} >
                   <span className="block px-4 py-2 text-gray-700 hover:bg-gray-200">Edit Profile</span>
+                </button>
+              </li>
+              <li>
+                <button onClick={handleLogout} className="block px-4 py-2 text-gray-700 hover:bg-gray-200 w-full text-left">
+                  Logout
                 </button>
               </li>
             </ul>
