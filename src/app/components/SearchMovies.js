@@ -99,7 +99,7 @@ export default function SearchMovies() {
                         type="submit"
                         className="px-4 bg-black h-10 text-white rounded-md hover:bg-red-800 transition-colors"
                     >
-                       
+                    Search
                     </button>
                 </form>
                 {movies.length > 0 && (
