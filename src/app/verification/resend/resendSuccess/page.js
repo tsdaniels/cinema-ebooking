@@ -3,14 +3,6 @@ import { useRouter } from "next/navigation";
 
 export default function SubmissionSuccess() {
     const router = useRouter();
-    
-    const handleHome = () => {
-        router.push("/");
-    };
-    
-    const handleLogin = () => {
-        router.push("/login");
-    };
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-black-500 py-12 px-4 sm:px-6 lg:px-8">
@@ -28,12 +20,13 @@ export default function SubmissionSuccess() {
                 <div className="mt-8 space-y-4">
                     <div className="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:space-x-4">
                         <button
-                            onClick={handleLogin}
+                            onClick={() => router.push('/login')}
                             className="w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-200"
                         >
                             Login
                         </button>
                         
+
                     </div>
                 </div>
             </div>
