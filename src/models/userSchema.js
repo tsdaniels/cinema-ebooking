@@ -7,6 +7,8 @@ const userSchema = new mongoose.Schema({
     verified: { type: Boolean, default: false },
     verificationToken: { type: String },
     verificationTokenExpires: { type: Date },
+    resetToken: { type: String },
+    resetTokenExpires: { type: Date }
 }, { collection: 'credentials' });
 
 export const User = mongoose.models.User || mongoose.model('User', userSchema);
