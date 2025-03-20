@@ -10,6 +10,7 @@ export default function Signup() {
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
     const router = useRouter();
+    const [userData, setUserData] = useState({ promotions: false });
 
     const checkEmail = async () => {
         try {
@@ -189,6 +190,15 @@ export default function Signup() {
                                 className="appearance-none relative block w-full px-3 py-3 border border-gray-300 rounded-lg placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 focus:z-10 sm:text-sm"
                                 placeholder="Confirm password"
                             />
+                            <div className="flex items-center">
+                                <input
+                                    type="checkbox"
+                                    className="mr-2"
+                                    checked={userData.promotions}
+                                    onChange={() => setUserData({ ...userData, promotions: !userData.promotions })}
+                                />
+                                <label className="mt-1 text-sm text-gray-500">Subscribe to promotions</label>
+                            </div>
                         </div>
                     </div>
 
