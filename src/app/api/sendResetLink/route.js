@@ -23,7 +23,7 @@ export async function POST(req) {
             return NextResponse.json({ success: false, error: "Email is required" }, { status: 400 });
         }
 
-        // Find user
+        // Find user with email address
         const user = await User.findOne({ email });
         if (!user) {
             return NextResponse.json({ success: false, error: "User not found" }, { status: 404 });
@@ -31,7 +31,7 @@ export async function POST(req) {
 
         // Generate password reset token
         const resetToken = crypto.randomBytes(32).toString('hex');
-        const resetTokenExpiration = Date.now() + 3600000; // 1 hour expiration
+        const resetTokenExpiration = new Date(Date.now() + 3600000); // 1 hour expiration
 
         // Store token in database
         user.resetToken = resetToken;
@@ -39,7 +39,7 @@ export async function POST(req) {
         await user.save();
 
         // Create reset password link
-        const resetLink = `${process.env.NEXT_PUBLIC_APP_URL}/reset-password?email=${email}&token=${resetToken}`;
+        const resetLink = `${process.env.NEXT_PUBLIC_APP_URL}/resetPasswordForm/${resetToken}`;
 
         // Send email
         await transporter.sendMail({
@@ -49,7 +49,7 @@ export async function POST(req) {
             html: `
                 <h2>Password Reset</h2>
                 <p>Click the link below to reset your password:</p>
-                <a href="${resetLink}">Click here to reset your password</a>
+                <a href=${resetLink}>Click here to reset your password</a>
                 <p>This link will expire in 1 hour.</p>
             `
         });
