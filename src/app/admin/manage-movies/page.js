@@ -85,10 +85,7 @@ export default function ManageMovies() {
     setSearchQuery(query);
     const results = await fetchMoviesFromDatabase(query);
     setSearchResults(results);
-<<<<<<< HEAD
-=======
     setSearchQuery(''); // clears search
->>>>>>> a9db284f2f4e99a566750488e45a47bade93b02a
   };
 
   // handle enter key press for search
@@ -98,9 +95,6 @@ export default function ManageMovies() {
     }
   };
 
-<<<<<<< HEAD
-  // Remove movie from the manage list
-=======
   // add movie to manage list
   const handleAddMovie = (movie) => {
     if (!selectedMovies.some((m) => m.title === movie.title)) {
@@ -109,7 +103,6 @@ export default function ManageMovies() {
   };
 
   //remove movie from the pagee
->>>>>>> a9db284f2f4e99a566750488e45a47bade93b02a
   const handleDeleteMovie = (id) => {
     setSelectedMovies(selectedMovies.filter((movie) => movie.id !== id));
   };
@@ -142,44 +135,6 @@ export default function ManageMovies() {
 
       {/* Add New Movie */}
       <div className="w-full max-w-lg mb-6">
-<<<<<<< HEAD
-        <h2 className="text-xl font-bold mb-4 text-red-400">➕ Add New Movie</h2>
-        <div className="space-y-4">
-          <input
-            type="text"
-            name="title"
-            placeholder="Movie Title"
-            value={newMovie.title}
-            onChange={handleInputChange}
-            className="w-full p-3 text-lg border border-gray-700 rounded-md bg-gray-900 text-white focus:outline-none focus:ring-2 focus:ring-red-500"
-            required
-          />
-          <input
-            type="text"
-            name="trailerUrl"
-            placeholder="Trailer URL"
-            value={newMovie.trailerUrl}
-            onChange={handleInputChange}
-            className="w-full p-3 text-lg border border-gray-700 rounded-md bg-gray-900 text-white focus:outline-none focus:ring-2 focus:ring-red-500"
-            required
-          />
-          <input
-            type="text"
-            name="status"
-            placeholder='showing_now or coming_soon'
-            value={newMovie.status}
-            onChange={handleInputChange}
-            className="w-full p-3 text-lg border border-gray-700 rounded-md bg-gray-900 text-white focus:outline-none focus:ring-2 focus:ring-red-500"
-            required
-          />
-          <button
-            onClick={handleAddMovie}
-            className="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md"
-          >
-            Add Movie
-          </button>
-        </div>
-=======
         <input
           type="text"
           placeholder="Search for a movie..."
@@ -188,7 +143,6 @@ export default function ManageMovies() {
           onChange={(e) => setSearchQuery(e.target.value)}
           onKeyDown={handleKeyPress}
         />
->>>>>>> a9db284f2f4e99a566750488e45a47bade93b02a
       </div>
 
       {/* Search Results */}
