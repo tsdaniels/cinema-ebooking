@@ -44,8 +44,6 @@ export async function POST(request) {
     user.verificationTokenExpires = tokenExpiration;
     await user.save();
 
-    console.log(verificationToken);
-
     // Send new verification email
     const verificationLink = `${process.env.NEXT_PUBLIC_APP_URL}/api/email/verify/${verificationToken}`;
     const mailOptions = {

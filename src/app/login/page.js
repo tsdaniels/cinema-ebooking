@@ -152,6 +152,9 @@ export default function Login() {
                                     placeholder="Password"
                                     disabled={isLoading}
                                 />
+                                <Link href="/forgotPassword" className='flex justify-end m-1 text-gray-500 text-xs hover:text-red-600'>
+                                    Forgot password
+                                </Link>
                             </div>
                         </div>
 
