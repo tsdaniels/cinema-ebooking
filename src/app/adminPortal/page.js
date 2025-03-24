@@ -11,7 +11,6 @@ export default function AdminPortal() {
     return(
         <div className="flex-col bg-gradient-to-b from-red-500 to-black font-bold text-center h-screen p-6 gap-6 pt-6">
             <h1 className='font-sans text-3xl text-white'>Admin Portal</h1>
-<<<<<<< HEAD
             <div className="flex flex-row bg-gradient-to-b border-white border-2 from-gray-400 to-white font-bold font-sans min-h-[450px] rounded-lg m-6 ml-16 mr-16 border-black">
                 <button 
                     onClick={() => router.push('/')}
@@ -34,30 +33,5 @@ export default function AdminPortal() {
 
                 </div>
         </div>
-                
-=======
-            <div className="flex flex-row bg-gradient-to-b border-white border-2 from-gray-400 to-white font-bold font-sans min-h-1/2 rounded-lg m-6 ml-16 mr-16 border-black">
-                <button 
-                    onClick={() => router.push('/')}
-                    className="flex flex-col bg-teal-200 border-2 border-black p-16 w-1/3 inline-block m-12 mt-20 mb-20  text-2xl text-center rounded-lg">
-                    <p>Manage Users </p>
-                    <i className="mx-auto mt-5"><FaUsers size={70}/></i>
-                </button>
-                <button 
-                    onClick={() => router.push('/')}
-                    className="flex flex-col border-2 border-black bg-yellow-100 p-16 w-1/3 inline-block m-12 mt-20 mb-20 text-2xl text-center rounded-lg">
-                    <p>Manage Movies</p>
-                    <i className="mx-auto mt-5"><MdMovieCreation size={70}/></i>
-                </button>
-                <button 
-                    onClick={() => router.push('/')}
-                    className="flex flex-col border-2 border-black bg-orange-200 p-16 w-1/3 m-12 mt-20 mb-20 text-2xl text-center rounded-lg">
-                    <p>Manage Promotions</p>
-                    <i className="mx-auto mt-5"><FaMoneyBill1 size={70}/></i>
-                </button>
-
-                </div>
-        </div>                
->>>>>>> main
     )
 }
