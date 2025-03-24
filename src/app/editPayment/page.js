@@ -3,139 +3,74 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function EditPayment() {
-  const [profile, setProfile] = useState({
-    firstName: "",
-    lastName: "",
-    birthday: "",
-    streetNumber: "",
-    streetName: "",
-    city: "",
-    state: "",
-    zipCode: "",
-    promotions: false
-  });
-  
+  const [cards, setCards] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isEditing, setIsEditing] = useState(false);
   const [error, setError] = useState(null);
   const [email, setEmail] = useState("");
   const router = useRouter();
 
-
-  //const email = "natesasapan@gmail.com";
-
-    // Get the user's email by checking auth in a useEffect
-    useEffect(() => {
-      async function checkAuth() {
-        try {
-          // Call an API that checks the cookie and returns email
-          const response = await fetch('/api/checkAuth');
-          const data = await response.json();
-          
-          if (data.isLoggedIn) {
-            setEmail(data.email);
-          } else {
-            // Redirect to login if not authenticated
-            router.push('/login');
-          }
-        } catch (error) {
-          console.error('Authentication check failed:', error);
-          setError("Authentication failed. Please log in again.");
+  // Get the user's email by checking auth in a useEffect
+  useEffect(() => {
+    async function checkAuth() {
+      try {
+        const response = await fetch('/api/checkAuth');
+        const data = await response.json();
+        
+        if (data.isLoggedIn) {
+          setEmail(data.email);
+        } else {
           router.push('/login');
         }
+      } catch (error) {
+        console.error('Authentication check failed:', error);
+        setError("Authentication failed. Please log in again.");
+        router.push('/login');
       }
-      
-      checkAuth();
-    }, [router]);
+    }
+    
+    checkAuth();
+  }, [router]);
 
-  // Fetch user data from the database when the component mounts
+  // Fetch cards data from the database when the component mounts
   useEffect(() => {
-    async function fetchUserData() {
-      if (!email) return; // Don't fetch if no email yet
+    async function fetchCards() {
+      if (!email) return;
 
       try {
         setIsLoading(true);
-        const response = await fetch("/api/fetchProfile", {
+        const response = await fetch("/api/getCards", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email }),
         });
         
-        if (!response.ok) throw new Error("Failed to fetch data");
+        if (!response.ok) throw new Error("Failed to fetch cards");
         
         const data = await response.json();
-        console.log("Profile data:", data.profile);
-        
-        // Update state with profile data
-        if (data.profile) {
-          setProfile({
-            firstName: data.profile.firstName || "",
-            lastName: data.profile.lastName || "",
-            birthday: data.profile.birthday || "",
-            streetNumber: data.profile.streetNumber || "",
-            streetName: data.profile.streetName || "",
-            city: data.profile.city || "",
-            state: data.profile.state || "",
-            zipCode: data.profile.zipCode || "",
-            promotions: data.profile.promotions || false
-          });
-        }
-        
+        console.log("Cards data:", data.cards);
+        setCards(data.cards || []);
         setError(null);
       } catch (error) {
-        console.error("Error fetching user data:", error);
-        setError("Failed to load profile data. Please try again later.");
+        console.error("Error fetching cards:", error);
+        setError("Failed to load payment cards. Please try again later.");
       } finally {
         setIsLoading(false);
       }
     }
     
-    fetchUserData();
+    fetchCards();
   }, [email]);
-
-  // Handle input changes when editing
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setProfile(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value
-    }));
-  };
-
-  // Handle form submission
-  async function handleSubmit(e) {
-    e.preventDefault();
-    
-    try {
-      const response = await fetch("/api/editProfile", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email,
-          ...profile
-        }),
-      });
-      
-      if (!response.ok) throw new Error("Failed to update profile");
-      
-      const data = await response.json();
-      console.log("Update successful:", data);
-      
-      alert("Profile updated successfully!");
-      setIsEditing(false);
-    } catch (error) {
-      console.error("Error updating profile:", error);
-      alert("Error updating profile. Please try again.");
-    }
-  }
-
-  // Toggle editing mode
-  function toggleEdit() {
-    setIsEditing(!isEditing);
-  }
 
   const handleHome = () => {
     router.push("/home");
+  };
+
+  const handleProfile = () => {
+    router.push("/editProfile");
+  };
+
+  const handleAddNew = () => {
+    router.push("/editPayment/addCard");
   };
 
   if (isLoading) {
@@ -150,8 +85,8 @@ export default function EditPayment() {
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-black via-red-950 to-red-900 text-black py-8">
-      <div className= "flex justify-between items-center z-50 fixed top-0 bg-red-900 w-full h-[95px]">
-      <div className="text-white text-4xl ml-4 font-semibold">Cinebook🍿</div>
+      <div className="flex justify-between items-center z-50 fixed top-0 bg-red-900 w-full h-[95px]">
+        <div className="text-white text-4xl ml-4 font-semibold">Cinebook🍿</div>
         <button
           type="button"
           onClick={handleHome}
@@ -160,8 +95,8 @@ export default function EditPayment() {
           Back to Home
         </button>   
       </div>
-      <div className="max-w-2xl mx-auto p-6 bg-white shadow-md rounded-lg w-full">
-        <h2 className="text-4xl font-bold mb-4 text-gray-700 text-center">Payment Information</h2>
+      <div className="max-w-2xl mt-20 p-6 bg-white shadow-md rounded-lg w-full">
+        <h2 className="text-4xl font-bold mb-4 text-gray-700 text-center">Payment Cards</h2>
         
         {error && (
           <div className="p-3 mb-4 bg-red-100 text-red-700 rounded-lg border border-red-200">
@@ -169,201 +104,51 @@ export default function EditPayment() {
           </div>
         )}
         
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Display Mode */}
-          {!isEditing && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">First Name</label>
-                  <div className="mt-1 p-2 bg-gray-50 rounded-md border border-gray-200">
-                    {profile.firstName || "Not set"}
+        <div className="space-y-6">
+          {cards.length === 0 ? (
+            <div className="text-center p-4 bg-gray-50 rounded-lg">
+              No payment cards found. Add a new card to get started.
+            </div>
+          ) : (
+            cards.map((card, index) => (
+              <div key={index} className="p-4 border rounded-lg shadow-sm hover:shadow-lg transition-shadow">
+                <div className="flex justify-between">
+                  <div className="font-medium">{card.firstName} {card.lastName}</div>
+                  <div className="text-gray-500">
+                    **** **** **** {card.cardNumber.slice(-4)}
                   </div>
                 </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Last Name</label>
-                  <div className="mt-1 p-2 bg-gray-50 rounded-md border border-gray-200">
-                    {profile.lastName || "Not set"}
-                  </div>
+                <div className="mt-2 text-sm text-gray-600">
+                  Expires: {new Date(card.expirationDate).toLocaleDateString()}
+                </div>
+                <div className="mt-1 text-sm text-gray-600">
+                  {card.streetNumber} {card.streetName}, {card.city}, {card.state} {card.zipCode}
                 </div>
               </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Birthday</label>
-                <div className="mt-1 p-2 bg-gray-50 rounded-md border border-gray-200">
-                  {profile.birthday.split("T")[0] || "Not set"}
-                </div>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Address</label>
-                <div className="mt-1 p-2 bg-gray-50 rounded-md border border-gray-200">
-                  {profile.streetNumber && profile.streetName 
-                    ? `${profile.streetNumber} ${profile.streetName}, ${profile.city}, ${profile.state} ${profile.zipCode}` 
-                    : "No address provided"}
-                </div>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Email Promotions</label>
-                <div className="mt-1 p-2 bg-gray-50 rounded-md border border-gray-200">
-                  {profile.promotions ? "Subscribed" : "Not subscribed"}
-                </div>
-              </div>
-            </div>
+            ))
           )}
+          <p className="text-sm text-gray-600 text-right">total: {cards.length}/4</p>
           
-          {/* Edit Mode */}
-          {isEditing && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">First Name</label>
-                  <input
-                    type="text"
-                    id="firstName"
-                    name="firstName"
-                    value={profile.firstName}
-                    onChange={handleChange}
-                    className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                  />
-                </div>
-                
-                <div>
-                  <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">Last Name</label>
-                  <input
-                    type="text"
-                    id="lastName"
-                    name="lastName"
-                    value={profile.lastName}
-                    onChange={handleChange}
-                    className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                  />
-                </div>
-              </div>
-              
-              <div>
-                <label htmlFor="birthday" className="block text-sm font-medium text-gray-700">Birthday</label>
-                <input
-                  type="date"
-                  id="birthday"
-                  name="birthday"
-                  value={profile.birthday}
-                  onChange={handleChange}
-                  className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                />
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label htmlFor="streetNumber" className="block text-sm font-medium text-gray-700">Street Number</label>
-                  <input
-                    type="text"
-                    id="streetNumber"
-                    name="streetNumber"
-                    value={profile.streetNumber}
-                    onChange={handleChange}
-                    className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                  />
-                </div>
-                
-                <div>
-                  <label htmlFor="streetName" className="block text-sm font-medium text-gray-700">Street Name</label>
-                  <input
-                    type="text"
-                    id="streetName"
-                    name="streetName"
-                    value={profile.streetName}
-                    onChange={handleChange}
-                    className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                  />
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-3 gap-4">
-                <div>
-                  <label htmlFor="city" className="block text-sm font-medium text-gray-700">City</label>
-                  <input
-                    type="text"
-                    id="city"
-                    name="city"
-                    value={profile.city}
-                    onChange={handleChange}
-                    className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                  />
-                </div>
-                
-                <div>
-                  <label htmlFor="state" className="block text-sm font-medium text-gray-700">State</label>
-                  <input
-                    type="text"
-                    id="state"
-                    name="state"
-                    value={profile.state}
-                    onChange={handleChange}
-                    className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                  />
-                </div>
-                
-                <div>
-                  <label htmlFor="zipCode" className="block text-sm font-medium text-gray-700">Zip Code</label>
-                  <input
-                    type="text"
-                    id="zipCode"
-                    name="zipCode"
-                    value={profile.zipCode}
-                    onChange={handleChange}
-                    className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                  />
-                </div>
-              </div>
-              
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  id="promotions"
-                  name="promotions"
-                  checked={profile.promotions}
-                  onChange={handleChange}
-                  className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                />
-                <label htmlFor="promotions" className="ml-2 block text-sm text-gray-700">
-                  Receive email promotions
-                </label>
-              </div>
-            </div>
-          )}
-          
-          {/* Buttons */}
           <div className="flex justify-center space-x-4 mt-6">
-            {isEditing ? (
-              <>
-                <button
-                  type="button"
-                  onClick={toggleEdit}
-                  className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-                >
-                  Save Changes
-                </button>
-              </>
-            ) : (
-              <button
-                type="button"
-                onClick={toggleEdit}
-                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-              >
-                Edit Profile
-              </button>              
-            )}
+            <button
+              type="button"
+              onClick={handleAddNew}
+              className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+            >
+              Add New Card
+            </button>              
           </div>
-        </form>
+
+          <div className="flex justify-center space-x-4 mt-2">
+            <button
+              type="button"
+              onClick={handleProfile}
+              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            >
+              Edit Profile
+            </button> 
+          </div>
+        </div>
       </div>
     </div>
   );
