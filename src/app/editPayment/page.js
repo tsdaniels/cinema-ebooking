@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
-export default function EditProfile() {
+export default function EditPayment() {
   const [profile, setProfile] = useState({
     firstName: "",
     lastName: "",
@@ -138,15 +138,11 @@ export default function EditProfile() {
     router.push("/home");
   };
 
-  const handlePayment = () => {
-    router.push("/editPayment");
-  };
-
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-screen bg-gradient-to-br from-black via-red-950 to-red-900 text-white">
         <div className="max-w-2xl mx-auto p-6 bg-white shadow-md rounded-lg w-full text-center text-black">
-          <p>Loading profile information...</p>
+          <p>Loading payment information...</p>
         </div>
       </div>
     );
@@ -165,7 +161,7 @@ export default function EditProfile() {
         </button>   
       </div>
       <div className="max-w-2xl mx-auto p-6 bg-white shadow-md rounded-lg w-full">
-        <h2 className="text-4xl font-bold mb-4 text-gray-700 text-center">Profile Information</h2>
+        <h2 className="text-4xl font-bold mb-4 text-gray-700 text-center">Payment Information</h2>
         
         {error && (
           <div className="p-3 mb-4 bg-red-100 text-red-700 rounded-lg border border-red-200">
@@ -366,20 +362,7 @@ export default function EditProfile() {
                 Edit Profile
               </button>              
             )}
-  
           </div>
-          {!isEditing && (
-          <div className="flex justify-center space-x-4 mt-6">
-            <button
-                  type="button"
-                  onClick={handlePayment}
-                  className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-                >
-                  Edit Payment Information
-                </button> 
-          </div>
-          )};
-
         </form>
       </div>
     </div>
