@@ -22,7 +22,7 @@ export default function HomePageNavbar() {
   useEffect(() => {
     const fetchMovies = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/movies/");
+        const response = await fetch("/api/movies");
         if (!response) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
