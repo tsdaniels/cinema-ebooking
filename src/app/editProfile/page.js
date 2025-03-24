@@ -14,6 +14,18 @@ export default function EditProfile() {
     zipCode: "",
     promotions: false
   });
+
+  const [originalProfile, setOriginalProfile] = useState({
+    firstName: "",
+    lastName: "",
+    birthday: "",
+    streetNumber: "",
+    streetName: "",
+    city: "",
+    state: "",
+    zipCode: "",
+    promotions: false
+  });
   
   const [isLoading, setIsLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
@@ -21,8 +33,6 @@ export default function EditProfile() {
   const [email, setEmail] = useState("");
   const router = useRouter();
 
-
-  //const email = "natesasapan@gmail.com";
 
     // Get the user's email by checking auth in a useEffect
     useEffect(() => {
@@ -79,7 +89,20 @@ export default function EditProfile() {
             zipCode: data.profile.zipCode || "",
             promotions: data.profile.promotions || false
           });
+
+          setOriginalProfile({
+            firstName: data.profile.firstName || "",
+            lastName: data.profile.lastName || "",
+            birthday: data.profile.birthday || "",
+            streetNumber: data.profile.streetNumber || "",
+            streetName: data.profile.streetName || "",
+            city: data.profile.city || "",
+            state: data.profile.state || "",
+            zipCode: data.profile.zipCode || "",
+            promotions: data.profile.promotions || false
+          });
         }
+        
         
         setError(null);
       } catch (error) {
@@ -131,6 +154,10 @@ export default function EditProfile() {
 
   // Toggle editing mode
   function toggleEdit() {
+    if (isEditing) {
+      // If canceling, restore original values
+      setProfile({...originalProfile});
+    }
     setIsEditing(!isEditing);
   }
 
@@ -192,6 +219,11 @@ export default function EditProfile() {
                   </div>
                 </div>
               </div>
+
+              <div>
+                <label htmlFor="email" className="block bg-grey-200 text-sm font-medium text-gray-700">Email (can't be changed) </label>
+                <p className="mt-1 block w-full p-2 border bg-gray-200 border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">{email}</p>
+              </div>
               
               <div>
                 <label className="block text-sm font-medium text-gray-700">Birthday</label>
@@ -246,6 +278,11 @@ export default function EditProfile() {
                   />
                 </div>
               </div>
+                            
+              <div>
+                <label htmlFor="email" className="block bg-grey-200 text-sm font-medium text-gray-700">Email (can't be changed) </label>
+                <p className="mt-1 block w-full p-2 border bg-gray-200 border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">{email}</p>
+              </div>
               
               <div>
                 <label htmlFor="birthday" className="block text-sm font-medium text-gray-700">Birthday</label>
@@ -253,7 +290,7 @@ export default function EditProfile() {
                   type="date"
                   id="birthday"
                   name="birthday"
-                  value={profile.birthday}
+                  value={profile.birthday ? new Date(profile.birthday).toISOString().split('T')[0] : ""}
                   onChange={handleChange}
                   className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
                 />
@@ -378,7 +415,7 @@ export default function EditProfile() {
                   Edit Payment Information
                 </button> 
           </div>
-          )};
+          )}
 
         </form>
       </div>

@@ -38,7 +38,7 @@ export default function EditPayment() {
 
       try {
         setIsLoading(true);
-        const response = await fetch("/api/getCards", {
+        const response = await fetch("/api/cards/getCards", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email }),
@@ -61,6 +61,31 @@ export default function EditPayment() {
     fetchCards();
   }, [email]);
 
+  async function deleteCard(cardId) {
+    if (!confirm("Are you sure you want to delete this card?")) return;
+    
+    try {
+      const response = await fetch("/api/cards/deleteCard", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, cardId }),
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to delete card");
+      }
+      
+      // Remove deleted card from state
+      setCards(cards.filter(card => card._id !== cardId));
+      alert("Card deleted successfully");
+    } catch (error) {
+      console.error("Error deleting card:", error);
+      alert(error.message);
+    }
+  }
+
   const handleHome = () => {
     router.push("/home");
   };
@@ -72,6 +97,10 @@ export default function EditPayment() {
   const handleAddNew = () => {
     router.push("/editPayment/addCard");
   };
+
+  const editCard = (id) => {
+    router.push(`/editPayment/${id}`);
+  }
 
   if (isLoading) {
     return (
@@ -111,20 +140,39 @@ export default function EditPayment() {
             </div>
           ) : (
             cards.map((card, index) => (
-              <div key={index} className="p-4 border rounded-lg shadow-sm hover:shadow-lg transition-shadow">
-                <div className="flex justify-between">
-                  <div className="font-medium">{card.firstName} {card.lastName}</div>
-                  <div className="text-gray-500">
-                    **** **** **** {card.cardNumber.slice(-4)}
+              <div key={index}>
+                <div className="p-4 border rounded-lg shadow-sm hover:shadow-lg transition-shadow relative">
+                  <div className="flex justify-between">
+                    <div className="font-bold">{card.firstName} {card.lastName}</div>
+                    <div className="text-gray-500">
+                      **** **** **** {card.cardNumber.slice(-4)}
+                    </div>
+                  </div>
+                  <div className="mt-2 text-sm text-gray-600">
+                    Expires: {new Date(card.expirationDate).toLocaleDateString()}
+                  </div>
+                  <div className="mt-1 text-sm text-gray-600">
+                    {card.streetNumber} {card.streetName}, {card.city}, {card.state} {card.zipCode}
                   </div>
                 </div>
-                <div className="mt-2 text-sm text-gray-600">
-                  Expires: {new Date(card.expirationDate).toLocaleDateString()}
-                </div>
-                <div className="mt-1 text-sm text-gray-600">
-                  {card.streetNumber} {card.streetName}, {card.city}, {card.state} {card.zipCode}
+                <div className="flex justify-between">
+                <button
+                  onClick={() => editCard(card._id)}
+                  className=" text-green-500 hover:text-green-700 bg-white rounded px-2 py-1 text-sm font-bold"
+                  title="Edit Card"
+                >
+                  edit
+                </button>
+                <button
+                  onClick={() => deleteCard(card._id)}
+                  className=" text-red-500 hover:text-red-700 bg-white rounded px-2 py-1 text-sm font-bold"
+                  title="Delete card"
+                >
+                  delete
+                </button>
                 </div>
               </div>
+              
             ))
           )}
           <p className="text-sm text-gray-600 text-right">total: {cards.length}/4</p>

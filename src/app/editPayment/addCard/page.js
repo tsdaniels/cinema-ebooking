@@ -26,7 +26,8 @@ export default function AddCard() {
   
   const [isLoading, setIsLoading] = useState(true);
   const [useSavedAddress, setUseSavedAddress] = useState(true);
-  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState("");
+  const [error, setError] = useState("");
   const [email, setEmail] = useState("");
   const router = useRouter();
 
@@ -71,8 +72,6 @@ export default function AddCard() {
               if (!response.ok) throw new Error("Failed to fetch data");
               
               const data = await response.json();
-
-              console.log(data.profile);
               
               // Update state with profile data
               if (data.profile) {
@@ -85,7 +84,7 @@ export default function AddCard() {
                 });
               }
               
-              setError(null);
+              setError("");
             } catch (error) {
               console.error("Error fetching user data:", error);
               setError("Failed to load address data. Please try again later.");
@@ -113,6 +112,18 @@ export default function AddCard() {
     
     try {
       // Create payload with all required data
+      if (!card || !card.firstName || !card.lastName || !card.cardNumber || !card.cvv || !card.expirationDate) {
+        throw new Error("All boxes must be filled in.");
+      }
+
+      if (!useSavedAddress && (!card || !card.streetName || 
+        !card.streetNumber || !card.city ||
+        !card.state || !card.zipCode)) {
+          throw new Error("All boxes must be filled in.");
+        }
+
+      console.log("here");
+
       let payload = { ...card };
       
       // If using saved address, add address fields to payload
@@ -130,7 +141,7 @@ export default function AddCard() {
         };
       }
       
-      const response = await fetch("/api/addCard", {
+      const response = await fetch("/api/cards/addCard", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, ...payload }),
@@ -141,12 +152,18 @@ export default function AddCard() {
       if (!response.ok) {
         throw new Error(data.error || "Failed to add Card.");
       }
-      
-      console.log("Update successful:", data);
-      alert("Card added successfully!");
-      router.push('/editPayment');
+
+      setError("");
+      setSuccess("Card added successfully! Redirecting...");
+
+      setTimeout(() => {
+        router.push("/editPayment");
+      }, 1000);
+
+      return;
     } catch (error) {
-      alert(error.message);
+      setSuccess("");
+      setError(error.message);
     }
   }
 
@@ -181,10 +198,18 @@ export default function AddCard() {
         </button>   
       </div>
       <div className="max-w-2xl mx-auto p-6 bg-white shadow-md rounded-lg w-full">
+
         <h2 className="text-4xl font-bold mb-4 text-gray-700 text-center">Payment Information</h2>
+
+        {/* Success Message */}
+        {success && (
+          <div className="mt-4 mb-4 p-3 rounded-lg bg-green-100 text-green-900 border border-green-400">
+              {success}
+          </div>
+        )}
         
         {error && (
-          <div className="p-3 mb-4 bg-red-100 text-red-700 rounded-lg border border-red-200">
+          <div className="p-3 mb-4 bg-red-100 text-red-900 rounded-lg border border-red-400">
             {error}
           </div>
         )}
@@ -253,7 +278,7 @@ export default function AddCard() {
                     className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
                   />
                 </div>
-        {/* Display Mode */}
+        {/* Use Saved Address */}
         {useSavedAddress && (
             <div className="space-y-4">
               <div>
@@ -268,7 +293,7 @@ export default function AddCard() {
             </div>
           )}
           
-          {/* Edit Mode */}
+          {/* Enter Custom Address */}
           {!useSavedAddress && (
             <div className="space-y-4">
               
@@ -359,7 +384,6 @@ export default function AddCard() {
           <div className="flex justify-center space-x-4 mt-6">
             <button
                   type="submit"
-                  onClick={handleSubmit}
                   className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
                 >
                   Submit Card
