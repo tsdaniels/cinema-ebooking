@@ -13,7 +13,7 @@ const EditAddress = () => {
             name="address"
             id="address"
             placeholder="default addy goes here"
-            className="p-4 text-gray-400 mb-4 bg-gray-700 rounded h-[40] w-[500px]" 
+            className="p-4 text-gray-400 mb-4 bg-gray-700 rounded h-[40] w-full" 
             >
             </input>
             <button className="flex mb-4 items-center justify-center p-2 rounded-lg w-full bg-red-700">
