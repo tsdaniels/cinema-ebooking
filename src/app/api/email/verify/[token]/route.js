@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
-import { redirect } from 'next/navigation';
 import connectDB from '@/libs/mongodb';
 import { User } from '@/models/userSchema';
+import { Profile } from '@/models/profileSchema';
 
 export async function GET(request, { params }) {
   try {
@@ -14,8 +14,6 @@ export async function GET(request, { params }) {
       verificationTokenExpires: { $gt: Date.now() }
     });
 
-    console.log(user);
-
     if (!user) {
       // Redirect to error page
       return NextResponse.redirect(new URL('/verification/error', request.url));
@@ -26,6 +24,17 @@ export async function GET(request, { params }) {
     user.verificationToken = undefined;
     user.verificationTokenExpires = undefined;
     await user.save();
+
+    const existingProfile = await Profile.findOne({ email: user.email });
+    
+    if (!existingProfile) {
+      // Create new profile
+      const newProfile = new Profile({
+        email: user.email
+      });
+      
+      await newProfile.save();
+    }
 
     // Redirect to success page
     return NextResponse.redirect(new URL('/verification/success', request.url));
