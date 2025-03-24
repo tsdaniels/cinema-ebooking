@@ -7,6 +7,6 @@ const cardSchema = new mongoose.Schema({
     cardNumber: { type: String },
     expirationDate: { type: Date },
     cvv: { type: String },
-}, { collection: 'credentials' });
+}, { collection: 'cards' });
 
 export const User = mongoose.models.Card || mongoose.model('Card', cardSchema);

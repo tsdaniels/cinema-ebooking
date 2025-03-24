@@ -1,61 +1,8 @@
-"use client"
-import React, { useState, useEffect } from "react";
-import { useForm } from 'react';
-import { CreditCard, Home, User, Lock, Bell, Save, Plus, Trash } from 'lucide-react';
-import EditProfileComponent from '../components/EditProfileComponent';
-import EditAddress from "../components/EditAddress";
-import EditPaymentMethods from "../components/EditPaymentMethods";
+'use client';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
-<<<<<<< HEAD
-const EditUserProfile = () => {
-    const [activeTab, setActiveTab] = useState('profile');
-
-    return(
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-gray-100">
-        <div className="container w-full max-w-3xl mx-auto p-4">
-            <h1 className="text-center mt-4 text-3xl ml-4 font-bold mb-8 text-red-500">Edit Your Profile</h1>
-            <div className="flex justify-center mb-6 border-b border-gray-800">
-                <button className={`py-2 px-4 mr-2 ${activeTab === 'profile' ? 'border-b-2 border-red-500 text-red-500' : 'text-gray-400'}`}
-                    onClick={() => setActiveTab('profile')}>
-                    <User className="inline mr-2" size={16} />
-                    Profile
-                </button>
-                <button className={`py-2 px-4 mr-2 ${activeTab === 'address' ? 'border-b-2 border-red-500 text-red-500' : 'text-gray-400'}`}
-                    onClick={() => setActiveTab('address')}>
-                    <Home className="inline mr-2" size={16} />
-                    Address
-                </button>
-                <button className={`py-2 px-4 mr-2 ${activeTab === 'payment-methods' ? 'border-b-2 border-red-500 text-red-500' : 'text-gray-400'}`}
-                    onClick={() => setActiveTab('payment-methods')}>
-                    <CreditCard className="inline mr-2" size={16} />
-                    Payment Methods
-                </button>
-                <button className={`py-2 px-4 mr-2 ${activeTab === 'passwords' ? 'border-b-2 border-red-500 text-red-500' : 'text-gray-400'}`}
-                    onClick={() => setActiveTab('passwords')}>
-                    <Lock className="inline mr-2" size={16} />
-                    Passwords
-                </button>
-            </div>
-            
-        </div>
-        <div>
-        <form className="flex p-6 w-[700] rounded-lg shadow-lg bg-gray-800 justify-center">
-            { activeTab === 'profile' && <EditProfileComponent/> }
-            { activeTab === 'address' && <EditAddress/> }
-            { activeTab === 'payment-methods' && <EditPaymentMethods/> }
-
-            </form>
-        </div>
-           
-            
-        
-       </div>
-
-    )
-    }
-export default EditUserProfile;
-=======
-export default function EditProfile() {
+export default function EditPayment() {
   const [profile, setProfile] = useState({
     firstName: "",
     lastName: "",
@@ -191,15 +138,11 @@ export default function EditProfile() {
     router.push("/home");
   };
 
-  const handlePayment = () => {
-    router.push("/editPayment");
-  };
-
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-screen bg-gradient-to-br from-black via-red-950 to-red-900 text-white">
         <div className="max-w-2xl mx-auto p-6 bg-white shadow-md rounded-lg w-full text-center text-black">
-          <p>Loading profile information...</p>
+          <p>Loading payment information...</p>
         </div>
       </div>
     );
@@ -218,7 +161,7 @@ export default function EditProfile() {
         </button>   
       </div>
       <div className="max-w-2xl mx-auto p-6 bg-white shadow-md rounded-lg w-full">
-        <h2 className="text-4xl font-bold mb-4 text-gray-700 text-center">Profile Information</h2>
+        <h2 className="text-4xl font-bold mb-4 text-gray-700 text-center">Payment Information</h2>
         
         {error && (
           <div className="p-3 mb-4 bg-red-100 text-red-700 rounded-lg border border-red-200">
@@ -419,23 +362,9 @@ export default function EditProfile() {
                 Edit Profile
               </button>              
             )}
-  
           </div>
-          {!isEditing && (
-          <div className="flex justify-center space-x-4 mt-6">
-            <button
-                  type="button"
-                  onClick={handlePayment}
-                  className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-                >
-                  Edit Payment Information
-                </button> 
-          </div>
-          )};
-
         </form>
       </div>
     </div>
   );
 }
->>>>>>> 26aa57749f08dadd8652ab3188e4804b10a87b0e
