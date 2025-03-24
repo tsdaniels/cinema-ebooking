@@ -120,9 +120,15 @@ export default function AddCard() {
         !card.streetNumber || !card.city ||
         !card.state || !card.zipCode)) {
           throw new Error("All boxes must be filled in.");
-        }
+      }
 
-      console.log("here");
+      if (useSavedAddress && (!address || !address.streetName ||
+        !address.streetNumber || !address.city ||
+          !address.state || !address.zipCode
+      )) {
+        throw new Error("Address not saved/incomplete! Please fill in manually.");
+      }
+
 
       let payload = { ...card };
       
@@ -186,88 +192,92 @@ export default function AddCard() {
   }
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-black via-red-950 to-red-900 text-black py-8">
-      <div className= "flex justify-between items-center z-50 fixed top-0 bg-red-900 w-full h-[95px]">
-      <div className="text-white text-4xl ml-4 font-semibold">Cinebook🍿</div>
+    <div className="flex flex-col min-h-screen bg-gradient-to-br from-black via-red-950 to-red-900">
+      {/* Fixed Navigation Bar */}
+      <header className="fixed top-0 left-0 right-0 z-50 bg-red-900 h-[95px] flex justify-between items-center px-4">
+        <div className="text-white text-4xl font-semibold">Cinebook🍿</div>
         <button
           type="button"
           onClick={handleHome}
-          className="mr-5 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+          className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
         >
           Back to Home
-        </button>   
-      </div>
-      <div className="max-w-2xl mx-auto p-6 bg-white shadow-md rounded-lg w-full">
+        </button>
+      </header>
+      
+      {/* Main Content - with top padding to clear the header */}
+      <main className="flex justify-center items-center flex-grow pt-[120px] px-4 pb-8">
+        <div className="max-w-2xl mx-auto p-6 bg-white shadow-md rounded-lg w-full text-black">
+          <h2 className="text-4xl font-bold mb-4 text-gray-700 text-center">Payment Information</h2>
 
-        <h2 className="text-4xl font-bold mb-4 text-gray-700 text-center">Payment Information</h2>
-
-        {/* Success Message */}
-        {success && (
-          <div className="mt-4 mb-4 p-3 rounded-lg bg-green-100 text-green-900 border border-green-400">
-              {success}
-          </div>
-        )}
-        
-        {error && (
-          <div className="p-3 mb-4 bg-red-100 text-red-900 rounded-lg border border-red-400">
-            {error}
-          </div>
-        )}
-        
-        <form onSubmit={handleSubmit} className="space-y-4">          
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">First Name</label>
-                  <input
-                    type="text"
-                    id="firstName"
-                    name="firstName"
-                    value={card.firstName}
-                    onChange={handleChange}
-                    className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                  />
-                </div>
-                
-                <div>
-                  <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">Last Name</label>
-                  <input
-                    type="text"
-                    id="lastName"
-                    name="lastName"
-                    value={card.lastName}
-                    onChange={handleChange}
-                    className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                  />
-                </div>
-              </div>
-
-              <div className="flex gap-4">
-                <div className="w-3/4">
-                    <label htmlFor="Card Number" className="text-sm font-medium text-gray-700">Card Number</label>
+          {/* Success Message */}
+          {success && (
+            <div className="mt-4 mb-4 p-3 rounded-lg bg-green-100 text-green-900 border border-green-400">
+                {success}
+            </div>
+          )}
+          
+          {/* Error Message */}
+          {error && (
+            <div className="p-3 mb-4 bg-red-100 text-red-900 rounded-lg border border-red-400">
+              {error}
+            </div>
+          )}
+          
+          <form onSubmit={handleSubmit} className="space-y-4">          
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">First Name</label>
                     <input
-                    type="text"
-                    id="cardNumber"
-                    name="cardNumber"
-                    value={card.cardNumber}
-                    onChange={handleChange}
-                    className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                      type="text"
+                      id="firstName"
+                      name="firstName"
+                      value={card.firstName}
+                      onChange={handleChange}
+                      className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
                     />
-                </div>
-                <div className="w-1/4">
-                    <label htmlFor="Cvv" className="text-sm font-medium text-gray-700">cvv</label>
+                  </div>
+                  
+                  <div>
+                    <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">Last Name</label>
                     <input
-                    type="text"
-                    id="cvv"
-                    name="cvv"
-                    value={card.cvv}
-                    onChange={handleChange}
-                    className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                      type="text"
+                      id="lastName"
+                      name="lastName"
+                      value={card.lastName}
+                      onChange={handleChange}
+                      className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
                     />
-                </div>
+                  </div>
                 </div>
 
-              <div>
+                <div className="flex gap-4">
+                  <div className="w-3/4">
+                      <label htmlFor="Card Number" className="text-sm font-medium text-gray-700">Card Number</label>
+                      <input
+                      type="text"
+                      id="cardNumber"
+                      name="cardNumber"
+                      value={card.cardNumber}
+                      onChange={handleChange}
+                      className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                      />
+                  </div>
+                  <div className="w-1/4">
+                      <label htmlFor="Cvv" className="text-sm font-medium text-gray-700">cvv</label>
+                      <input
+                      type="text"
+                      id="cvv"
+                      name="cvv"
+                      value={card.cvv}
+                      onChange={handleChange}
+                      className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                      />
+                  </div>
+                </div>
+
+                <div>
                   <label htmlFor="expirationDate" className="block text-sm font-medium text-gray-700">Expiration Date</label>
                   <input
                     type="date"
@@ -278,129 +288,127 @@ export default function AddCard() {
                     className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
                   />
                 </div>
-        {/* Use Saved Address */}
-        {useSavedAddress && (
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Address</label>
-                <div className="mt-1 p-2 bg-gray-50 rounded-md border border-gray-200">
-                  {address.streetNumber && address.streetName 
-                    ? `${address.streetNumber} ${address.streetName}, ${address.city}, ${address.state} ${address.zipCode}` 
-                    : "No address provided"}
-                </div>
-              </div>
-              
-            </div>
-          )}
-          
-          {/* Enter Custom Address */}
-          {!useSavedAddress && (
-            <div className="space-y-4">
-              
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label htmlFor="streetNumber" className="block text-sm font-medium text-gray-700">Street Number</label>
-                  <input
-                    type="text"
-                    id="streetNumber"
-                    name="streetNumber"
-                    value={card.streetNumber}
-                    onChange={handleChange}
-                    className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                  />
-                </div>
                 
-                <div>
-                  <label htmlFor="streetName" className="block text-sm font-medium text-gray-700">Street Name</label>
-                  <input
-                    type="text"
-                    id="streetName"
-                    name="streetName"
-                    value={card.streetName}
-                    onChange={handleChange}
-                    className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                  />
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-3 gap-4">
-                <div>
-                  <label htmlFor="city" className="block text-sm font-medium text-gray-700">City</label>
-                  <input
-                    type="text"
-                    id="city"
-                    name="city"
-                    value={card.city}
-                    onChange={handleChange}
-                    className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                  />
-                </div>
+                {/* Use Saved Address */}
+                {useSavedAddress && (
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Address</label>
+                      <div className="mt-1 p-2 bg-gray-50 rounded-md border border-gray-200">
+                        {address.streetNumber && address.streetName 
+                          ? `${address.streetNumber} ${address.streetName}, ${address.city}, ${address.state} ${address.zipCode}` 
+                          : "No address provided"}
+                      </div>
+                    </div>
+                  </div>
+                )}
                 
-                <div>
-                  <label htmlFor="state" className="block text-sm font-medium text-gray-700">State</label>
+                {/* Enter Custom Address */}
+                {!useSavedAddress && (
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label htmlFor="streetNumber" className="block text-sm font-medium text-gray-700">Street Number</label>
+                        <input
+                          type="text"
+                          id="streetNumber"
+                          name="streetNumber"
+                          value={card.streetNumber}
+                          onChange={handleChange}
+                          className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                        />
+                      </div>
+                      
+                      <div>
+                        <label htmlFor="streetName" className="block text-sm font-medium text-gray-700">Street Name</label>
+                        <input
+                          type="text"
+                          id="streetName"
+                          name="streetName"
+                          value={card.streetName}
+                          onChange={handleChange}
+                          className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-3 gap-4">
+                      <div>
+                        <label htmlFor="city" className="block text-sm font-medium text-gray-700">City</label>
+                        <input
+                          type="text"
+                          id="city"
+                          name="city"
+                          value={card.city}
+                          onChange={handleChange}
+                          className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                        />
+                      </div>
+                      
+                      <div>
+                        <label htmlFor="state" className="block text-sm font-medium text-gray-700">State</label>
+                        <input
+                          type="text"
+                          id="state"
+                          name="state"
+                          value={card.state}
+                          onChange={handleChange}
+                          className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                        />
+                      </div>
+                      
+                      <div>
+                        <label htmlFor="zipCode" className="block text-sm font-medium text-gray-700">Zip Code</label>
+                        <input
+                          type="text"
+                          id="zipCode"
+                          name="zipCode"
+                          value={card.zipCode}
+                          onChange={handleChange}
+                          className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+    
+                <div className="flex items-center">
                   <input
-                    type="text"
-                    id="state"
-                    name="state"
-                    value={card.state}
-                    onChange={handleChange}
-                    className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                    type="checkbox"
+                    id="sameAsAddress"
+                    name="sameAsAddress"
+                    checked={useSavedAddress}
+                    onChange={() => setUseSavedAddress(!useSavedAddress)}
+                    className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
                   />
-                </div>
-                
-                <div>
-                  <label htmlFor="zipCode" className="block text-sm font-medium text-gray-700">Zip Code</label>
-                  <input
-                    type="text"
-                    id="zipCode"
-                    name="zipCode"
-                    value={card.zipCode}
-                    onChange={handleChange}
-                    className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                  />
+                  <label htmlFor="promotions" className="ml-2 block text-sm text-gray-700">
+                    Use Saved Address
+                  </label>
                 </div>
               </div>
+            
+            {/* Buttons */}
+            <div className="flex justify-center space-x-4 mt-6">
+              <button
+                    type="submit"
+                    className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                  >
+                    Submit Card
+                  </button> 
             </div>
-          )}
- 
-              
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  id="sameAsAddress"
-                  name="sameAsAddress"
-                  checked={useSavedAddress}
-                  onChange={() => setUseSavedAddress(!useSavedAddress)}
-                  className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                />
-                <label htmlFor="promotions" className="ml-2 block text-sm text-gray-700">
-                  Use Saved Address
-                </label>
-              </div>
-            </div>
-          
-          {/* Buttons */}
-          <div className="flex justify-center space-x-4 mt-6">
-            <button
-                  type="submit"
-                  className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-                >
-                  Submit Card
-                </button> 
-          </div>
 
-          <div className="flex justify-center space-x-4 mt-6">
-            <button
-                  type="button"
-                  onClick={handleCards}
-                  className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                >
-                  Back to Cards
-                </button> 
-          </div>
-        </form>
-      </div>
+            <div className="flex justify-center space-x-4 mt-6">
+              <button
+                    type="button"
+                    onClick={handleCards}
+                    className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                  >
+                    Back to Cards
+                  </button> 
+            </div>
+          </form>
+        </div>
+      </main>
     </div>
   );
 }
