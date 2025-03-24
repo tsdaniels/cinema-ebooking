@@ -5,7 +5,7 @@
 
 ## Installation
 
-1. Clone the project:
+1. Clone the project and switch to it:
 ```bash
 git clone https://github.com/tsdaniels/cinema-ebooking.git
 cd cinema-ebooking
@@ -26,7 +26,21 @@ npm run build
 npm run dev
 ```
 
-5. Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
+5. Add an .env file to the root of the directory
+'''bash
+touch .env
+'''
+
+6. Fill in required fields with your own
+'''
+MONGODB_URI="mongodb+srv://yourlinkhere"
+JWT_SECRET="your-password"
+EMAIL_ADDRESS="your-gmail@gmail.com"
+EMAIL_PASSWORD="your-gmail-app-password"
+NEXT_PUBLIC_APP_URL="http://localhost:3000"
+'''
+
+7. Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
 
 ## Development Notes
 - The development server supports hot-reloading - your changes will appear automatically in the browser
