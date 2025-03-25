@@ -47,7 +47,6 @@ export default function EditPayment() {
         if (!response.ok) throw new Error("Failed to fetch cards");
         
         const data = await response.json();
-        console.log("Cards data:", data.cards);
         setCards(data.cards || []);
         setError(null);
       } catch (error) {
