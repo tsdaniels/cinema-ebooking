@@ -148,7 +148,7 @@ export default function EditPayment() {
                     </div>
                   </div>
                   <div className="mt-2 text-sm text-gray-600">
-                    Expires: {new Date(card.expirationDate).toLocaleDateString()}
+                    Expires: {card.expirationDate}
                   </div>
                   <div className="mt-1 text-sm text-gray-600">
                     {card.streetNumber} {card.streetName}, {card.city}, {card.state} {card.zipCode}
