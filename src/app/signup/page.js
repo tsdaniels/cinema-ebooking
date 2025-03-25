@@ -70,7 +70,7 @@ export default function Signup() {
     
             // If all validations pass, attempt signup
             const response = await fetch('/api/signup', {
-                method: 'POST',
+                method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -82,16 +82,16 @@ export default function Signup() {
             const data = await response.json();
             
             if (response.ok && data.success) {
-                setSuccess('Signup successful! Redirecting...');
+                setSuccess('Password updated! Redirecting...');
                 setTimeout(() => {
-                    router.push("/signup/signupAccepted");
+                    router.push("/editProfile");
                 }, 1500);
             } else {
-                setError(data.error || "Signup failed. Please try again.");
+                setError(data.error || "Password update failed. Please try again.");
             }
         } catch (error) {
-            console.log("Error:", error);
-            setError("An error occurred during signup. Please try again.");
+            setSuccess("");
+            setError(data.error);
         }
     };
     
