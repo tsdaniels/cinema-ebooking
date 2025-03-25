@@ -32,18 +32,11 @@ export async function POST(request) {
         );
     }
     
-    // Get encryption key from environment variables
-    const encryptionKey = process.env.NEXT_PUBLIC_CARD_KEY;
-    if (!encryptionKey) {
-        throw new Error("Encryption key not found in environment variables");
-    }
-    
     // Create a new object with decrypted values
     const decryptedCard = {
       ...card._doc,  // Spread the Mongoose document properties
-      cardNumber: encryption.decrypt(card.cardNumber, encryptionKey),
-      expirationDate: encryption.decrypt(card.expirationDate, encryptionKey),
-      cvv: encryption.decrypt(card.cvv, encryptionKey)
+      cardNumber: encryption.decrypt(card.cardNumber),
+      cvv: encryption.decrypt(card.cvv)
     };
    
     return NextResponse.json(

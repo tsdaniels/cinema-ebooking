@@ -7,13 +7,7 @@ export async function POST(request) {
     try {
         await connectDB();
         const { email, firstName, lastName, cardNumber, expirationDate, cvv, streetNumber, streetName, city, state, zipCode } = await request.json();
-        
-        // Get encryption key from environment variables
-        const encryptionKey = process.env.NEXT_PUBLIC_CARD_KEY;
-        if (!encryptionKey) {
-            throw new Error("Encryption key not found in environment variables");
-        }
-        
+
         // Find all cards under provided email
         const cards = await Card.find({ email: email });
         if (cards.length >= 4) {
@@ -24,8 +18,8 @@ export async function POST(request) {
         }
         
         // Encrypt sensitive card information
-        const encryptedCardNumber = encryption.encrypt(cardNumber.toString(), encryptionKey);
-        const encryptedCVV = encryption.encrypt(cvv.toString(), encryptionKey);
+        const encryptedCardNumber = encryption.encrypt(cardNumber.toString());
+        const encryptedCVV = encryption.encrypt(cvv.toString());
         
         // Create new card with encrypted information
         await Card.create({
