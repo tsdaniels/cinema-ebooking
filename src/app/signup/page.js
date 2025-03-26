@@ -10,7 +10,7 @@ export default function Signup() {
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
     const router = useRouter();
-    const [userData, setUserData] = useState({ promotions: false });
+    const [promotions, setPromotions] = useState(false);
 
     const checkEmail = async () => {
         try {
@@ -25,7 +25,6 @@ export default function Signup() {
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-
             const data = await response.json();
             return !data.exists;
         } catch (error) {
@@ -70,24 +69,25 @@ export default function Signup() {
     
             // If all validations pass, attempt signup
             const response = await fetch('/api/signup', {
-                method: 'PUT',
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
                     email: email,
-                    password: password
+                    password: password,
+                    promotions: promotions
                 })
             });
             const data = await response.json();
-            
+
             if (response.ok && data.success) {
-                setSuccess('Password updated! Redirecting...');
+                setSuccess('Signup successful! Redirecting...');
                 setTimeout(() => {
-                    router.push("/editProfile");
+                    router.push("/signup/signupAccepted");
                 }, 1500);
             } else {
-                setError(data.error || "Password update failed. Please try again.");
+                setError(data.error || "Signup failed. Please try again.");
             }
         } catch (error) {
             setSuccess("");
@@ -194,8 +194,8 @@ export default function Signup() {
                                 <input
                                     type="checkbox"
                                     className="mr-2"
-                                    checked={userData.promotions}
-                                    onChange={() => setUserData({ ...userData, promotions: !userData.promotions })}
+                                    checked={promotions}
+                                    onChange={(e) => setPromotions(e.target.checked)}
                                 />
                                 <label className="mt-1 text-sm text-gray-500">Subscribe to promotions</label>
                             </div>
