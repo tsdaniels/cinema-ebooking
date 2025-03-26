@@ -19,10 +19,13 @@ export async function GET(request, { params }) {
       return NextResponse.redirect(new URL('/verification/error', request.url));
     }
 
+    const promotions = user.promotions;
+
     // Update user verification status
     user.verified = true;
     user.verificationToken = undefined;
     user.verificationTokenExpires = undefined;
+    user.promotions = undefined;
     await user.save();
 
     const existingProfile = await Profile.findOne({ email: user.email });
@@ -30,7 +33,8 @@ export async function GET(request, { params }) {
     if (!existingProfile) {
       // Create new profile
       const newProfile = new Profile({
-        email: user.email
+        email: user.email,
+        promotions: promotions
       });
       
       await newProfile.save();
