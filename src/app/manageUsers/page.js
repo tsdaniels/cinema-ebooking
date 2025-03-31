@@ -9,6 +9,7 @@ export default function ManageUsers() {
     const [users, setUsers] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [newUser, setNewUser] = useState({ firstName: '', lastName: '', email: '', role: 'User' });
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         async function fetchUsers() {
@@ -22,6 +23,8 @@ export default function ManageUsers() {
                 }
             } catch (error) {
                 console.error("Error fetching users: ", error);
+            } finally {
+                setLoading(false);
             }
         }
         fetchUsers();
@@ -51,6 +54,14 @@ export default function ManageUsers() {
             console.error("Error adding user:", error);
         }
     };
+
+    if (loading) {
+        return (
+            <div className="relative w-full min-h-screen bg-gradient-to-br from-black via-red-950 to-red-900 overflow-hidden">
+                <h1 className="flex justify-center font-sans text-3xl text-white mt-3 pt-3 font-bold">Loading...</h1>
+            </div>
+        );
+    }
 
     return (
         <div className="relative w-full min-h-screen bg-gradient-to-br from-black via-red-950 to-red-900 overflow-hidden">
