@@ -1,7 +1,7 @@
 // File: app/api/movies/route.js
 import { NextResponse } from 'next/server';
-import connectDB from '@/libs/mongodb';
-import { Movie } from '@/models/movieSchema';
+import connectDB from '../../../libs/mongodb';
+import { Movie } from '../../../models/movieSchema';
 
 export async function GET() {
   try {

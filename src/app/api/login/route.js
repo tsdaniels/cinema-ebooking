@@ -1,7 +1,7 @@
 // app/api/login/route.js
 import { NextResponse } from 'next/server';
-import connectMongoDB from '@/libs/mongodb';
-import { User } from '@/models/userSchema';
+import connectMongoDB from '../../../libs/mongodb';
+import { User } from '../../../models/userSchema';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
