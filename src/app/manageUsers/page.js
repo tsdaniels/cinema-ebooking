@@ -8,7 +8,7 @@ export default function ManageUsers() {
     const router = useRouter();
     const [users, setUsers] = useState([]);
     const [showModal, setShowModal] = useState(false);
-    const [newUser, setNewUser] = useState({ firstName: '', lastName: '', email: '', password: '', role: 'User' });
+    const [newUser, setNewUser] = useState({ firstName: '', lastName: '', email: '', role: 'User', status: 'active' });
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -47,13 +47,30 @@ export default function ManageUsers() {
             if (data.success) {
                 setUsers([...users, data.user]);
                 setShowModal(false);
-                setNewUser({ firstName: '', lastName: '', email: '', role: 'User' });
-                console.log("Saving user:", newUser);
+                setNewUser({ firstName: '', lastName: '', email: '', role: 'User', status: 'active' });
             } else {
                 console.error("Error:", data.message);
             }
         } catch (error) {
             console.error("Error adding user:", error);
+        }
+    };
+
+    const handleDeleteUser = async (id) => {
+        try {
+            const res = await fetch(`/api/deleteUser`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id }),
+            });
+            const data = await res.json();
+            if(data.success) {
+                setUsers(users.filter(user => user._id !== id));
+            } else {
+                console.error("Error deleting user:", data.message);
+            }
+        } catch (error) {
+            console.error("Error deleting user:", error);
         }
     };
 
@@ -85,23 +102,29 @@ export default function ManageUsers() {
                             <th className="border border-gray-600 p-3">Name</th>
                             <th className="border border-gray-600 p-3">Email</th>
                             <th className="border border-gray-600 p-3">Role</th>
+                            <th className="border border-gray-600 p-3">Status</th>
                             <th className="border border-gray-600 p-3">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {users.length > 0 ? (
-                            users.map((user, index) => (
-                                <tr key={index} className="text-center bg-gray-700 odd:bg-gray-800">
+                            users.map(user => (
+                                <tr key={user._id} className="text-center bg-gray-700 odd:bg-gray-800">
                                     <td className="border border-gray-600 p-3">
                                         {user.firstName || "N/A"} {user.lastName || ""}
                                     </td>
                                     <td className="border border-gray-600 p-3">{user.email}</td>
                                     <td className="border border-gray-600 p-3">{user.role || "User"}</td>
-                                    <td className="border border-gray-600 p-3 flex justify-center space-x-4">
+                                    <td className="border border-gray-600 p-3">
+                                        <button className='text-green-500'>
+                                            {user.status === "active" ? "Suspend" : "Activate"}
+                                        </button>
+                                    </td>
+                                    <td className='border border-gray-600 p-3 flex justify-center space-x-4'>
                                         <button className="text-yellow-400 hover:text-yellow-300 transition">
                                             <FaUserEdit size={20} />
                                         </button>
-                                        <button className="text-red-500 hover:text-red-400 transition">
+                                        <button onClick={() => handleDeleteUser(user._id)} className="text-red-500 hover:text-red-400 transition">
                                             <FaUserMinus size={20} />
                                         </button>
                                     </td>

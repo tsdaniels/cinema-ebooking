@@ -1,4 +1,3 @@
-// app/api/addUser/route.js
 import { NextResponse } from 'next/server';
 import connectMongoDB from '@/libs/mongodb';
 import { User } from '@/models/userSchema';
