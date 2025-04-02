@@ -8,7 +8,7 @@ export default function ManageUsers() {
     const router = useRouter();
     const [users, setUsers] = useState([]);
     const [showModal, setShowModal] = useState(false);
-    const [newUser, setNewUser] = useState({ firstName: '', lastName: '', email: '', role: 'User' });
+    const [newUser, setNewUser] = useState({ firstName: '', lastName: '', email: '', password: '', role: 'User' });
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -31,11 +31,12 @@ export default function ManageUsers() {
     }, []);
 
     const handleChange = (e) => {
-        setNewUser({ ...NewUser, [e.target.name]: e.target.balue });
+        setNewUser({ ...newUser, [e.target.name]: e.target.value });
     };
 
     const handleAddUser = async () => {
         try {
+            console.log(newUser);
             const res = await fetch('/api/addUser', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -47,6 +48,7 @@ export default function ManageUsers() {
                 setUsers([...users, data.user]);
                 setShowModal(false);
                 setNewUser({ firstName: '', lastName: '', email: '', role: 'User' });
+                console.log("Saving user:", newUser);
             } else {
                 console.error("Error:", data.message);
             }
@@ -126,6 +128,7 @@ export default function ManageUsers() {
                             <input type="text" name="firstName" value={newUser.firstName} onChange={handleChange} placeholder="First Name" className="w-full p-2 mb-2 bg-gray-800 border border-gray-600 rounded"/>
                             <input type="text" name="lastName" value={newUser.lastName} onChange={handleChange} placeholder="Last Name" className="w-full p-2 mb-2 bg-gray-800 border border-gray-600 rounded"/>
                             <input type="email" name="email" value={newUser.email} onChange={handleChange} placeholder="Email" className="w-full p-2 mb-2 bg-gray-800 border border-gray-600 rounded"/>
+                            <input type="email" name="password" value={newUser.password} onChange={handleChange} placeholder="Password" className="w-full p-2 mb-2 bg-gray-800 border border-gray-600 rounded"/>
                             <select name="role" value={newUser.role} onChange={handleChange} className="w-full p-2 mb-4 bg-gray-800 border border-gray-600 rounded">
                                 <option value="User">User</option>
                                 <option value="Admin">Admin</option>
