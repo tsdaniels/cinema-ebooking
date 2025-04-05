@@ -1,10 +1,13 @@
 "use client"
 import { useState, useEffect } from "react";
 import CryptoJS from "crypto-js";
+import { useRouter } from "next/navigation";
 
-// Simplified MovieCard component without trailer functionality
-const MovieCard = ({ title, posterUrl }) => (
-  <div className="relative overflow-hidden rounded-lg shadow-lg transition-all duration-300 transform hover:scale-105 hover:shadow-2xl bg-black border border-red-900">
+
+const MovieCard = ({ title, posterUrl, handleClick, id }) => (
+    
+  <div 
+  className="relative overflow-hidden rounded-lg shadow-lg transition-all duration-300 transform hover:scale-105 hover:shadow-2xl bg-black border border-red-900">
     <div className="h-48 bg-gradient-to-b from-red-900 to-black flex items-center justify-center overflow-hidden">
       {posterUrl ? (
         <img 
@@ -18,7 +21,7 @@ const MovieCard = ({ title, posterUrl }) => (
     </div>
     <div className="p-4">
       <h3 className="text-white font-bold text-lg truncate">{title}</h3>
-      <button className="mt-3 w-full bg-red-900 hover:bg-red-800 text-white py-2 px-4 rounded-md transition-colors duration-200 flex items-center justify-center">
+      <button onClick={() => handleClick(id)} className="mt-3 w-full bg-red-900 hover:bg-red-800 text-white py-2 px-4 rounded-md transition-colors duration-200 flex items-center justify-center">
         <span>Book Tickets</span>
       </button>
     </div>
@@ -26,6 +29,22 @@ const MovieCard = ({ title, posterUrl }) => (
 );
 
 export default function SearchMovies() {
+
+    const [isClient, setIsClient] = useState(false);
+    const router = useRouter();
+
+    useEffect(() => {
+        setIsClient(true); // Now we're on the client side
+    }, []);
+
+    const handleClick = (id) => {
+        if (isClient) {
+            router.push(`/movieInfo/${id}`);
+        }
+    };
+
+
+
     const [movies, setMovies] = useState([]);
     const [nowPlaying, setNowPlaying] = useState([]);
     const [comingSoon, setComingSoon] = useState([]);
@@ -180,8 +199,10 @@ export default function SearchMovies() {
                                         movies.map(movie => (
                                             <MovieCard
                                                 key={generateKey(movie)}
+                                                id={movie._id}
                                                 title={movie.title}
                                                 posterUrl={movie.posterUrl}
+                                                handleClick={handleClick}
                                             />
                                         ))
                                     ) : (
@@ -200,8 +221,10 @@ export default function SearchMovies() {
                                         nowPlaying.map(movie => (
                                             <MovieCard
                                                 key={generateKey(movie)}
+                                                id={movie._id}
                                                 title={movie.title}
                                                 posterUrl={movie.posterUrl}
+                                                handleClick={handleClick}
                                             />
                                         ))
                                     ) : (
@@ -220,8 +243,10 @@ export default function SearchMovies() {
                                         comingSoon.map(movie => (
                                             <MovieCard
                                                 key={generateKey(movie)}
+                                                id={movie._id}
                                                 title={movie.title}
                                                 posterUrl={movie.posterUrl}
+                                                handleClick={handleClick}
                                             />
                                         ))
                                     ) : (
