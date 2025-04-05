@@ -10,7 +10,9 @@ const userSchema = new mongoose.Schema({
     resetToken: { type: String },
     resetTokenExpires: { type: Date },
     promotions: {type: Boolean, default: false},
-    isAdmin: {type: Boolean, deafult: false}
+    role: { type: String, enum: ['user', 'admin'], default: 'user' },
+    isAdmin: {type: Boolean, deafult: false},
+    isFirstLogin: { type: Boolean, default: true }
 }, { collection: 'credentials' });
 
 export const User = mongoose.models.User || mongoose.model('User', userSchema);
