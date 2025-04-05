@@ -9,7 +9,8 @@ const userSchema = new mongoose.Schema({
     verificationTokenExpires: { type: Date },
     resetToken: { type: String },
     resetTokenExpires: { type: Date },
-    promotions: {type: Boolean, default: false}
+    promotions: {type: Boolean, default: false},
+    isAdmin: {type: Boolean, deafult: false}
 }, { collection: 'credentials' });
 
 export const User = mongoose.models.User || mongoose.model('User', userSchema);
