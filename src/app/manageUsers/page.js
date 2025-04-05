@@ -92,7 +92,7 @@ export default function ManageUsers() {
                         className="flex items-center bg-red-700 border-black px-6 py-2 text-lg rounded-lg"
                         onClick={() => setShowModal(true)}
                     >
-                        <FaUserPlus className="mr-2" /> Add User
+                        <FaUserPlus className="mr-2" /> Add Admin
                     </button>
                 </div>
                 
@@ -151,14 +151,13 @@ export default function ManageUsers() {
                             <input type="text" name="firstName" value={newUser.firstName} onChange={handleChange} placeholder="First Name" className="w-full p-2 mb-2 bg-gray-800 border border-gray-600 rounded"/>
                             <input type="text" name="lastName" value={newUser.lastName} onChange={handleChange} placeholder="Last Name" className="w-full p-2 mb-2 bg-gray-800 border border-gray-600 rounded"/>
                             <input type="email" name="email" value={newUser.email} onChange={handleChange} placeholder="Email" className="w-full p-2 mb-2 bg-gray-800 border border-gray-600 rounded"/>
-                            <input type="email" name="password" value={newUser.password} onChange={handleChange} placeholder="Password" className="w-full p-2 mb-2 bg-gray-800 border border-gray-600 rounded"/>
                             <select name="role" value={newUser.role} onChange={handleChange} className="w-full p-2 mb-4 bg-gray-800 border border-gray-600 rounded">
                                 <option value="User">User</option>
                                 <option value="Admin">Admin</option>
                             </select>
 
                             <button onClick={handleAddUser} className="w-full bg-red-700 p-2 rounded-lg font-bold">
-                                Add User
+                                Add Admin
                             </button>
                         </div>
                     </div>

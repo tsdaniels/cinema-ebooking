@@ -18,7 +18,7 @@ export async function POST(request) {
     try {
         await connectMongoDB();
        
-        const { email, password, promotions } = await request.json();
+        const { email, password, promotions, role } = await request.json();
        
         // Input validation
         if (!email || !password) {
@@ -52,7 +52,8 @@ export async function POST(request) {
             verified: false,
             verificationToken,
             verificationTokenExpires: tokenExpiration,
-            promotions: promotions
+            promotions: promotions,
+            role
         });
 
         // Create verification link

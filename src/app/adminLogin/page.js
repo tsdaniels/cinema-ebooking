@@ -12,8 +12,8 @@ export default function AdminLogin() {
     const [resend, setResend] = useState("");
     const router = useRouter();
 
-    // Function to check if the admin needs to change their password (first login check)
-    const checkAdminFirstLogin = async () => {
+    // Check if the admin exists or if it's the first login
+    const checkIfFirstAdmin = async () => {
         try {
             const response = await fetch('/api/checkAdminFirstLogin', {
                 method: 'POST',
@@ -22,15 +22,19 @@ export default function AdminLogin() {
                 },
                 body: JSON.stringify({ email })
             });
-
+    
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                const data = await response.json();
+                setError(data.message || 'Unknown error occurred');
+                return false;
             }
-
+    
             const data = await response.json();
-            return data.firstLogin; // Assuming this will return a true/false value
+            console.log("Check Admin First Login Response:", data);  
+            return data.firstLogin; 
         } catch (error) {
-            console.log("Error checking admin first login:", error);
+            console.error("Error checking admin first login:", error);
+            setError('An error occurred while checking the admin login status.');
             return false;
         }
     };
@@ -43,10 +47,18 @@ export default function AdminLogin() {
             setResend("");
 
             setIsLoading(true);
-            
+
             // Validation checks
             if (!email || !password) {
                 setError("Please enter both email and password");
+                return;
+            }
+
+            const isFirstLogin = await checkIfFirstAdmin();
+
+            if (isFirstLogin) {
+                setSuccess('Admin logged in successfully! Please change your password.');
+                router.push('/changePassword');
                 return;
             }
 
@@ -55,29 +67,20 @@ export default function AdminLogin() {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({
-                    email,
-                    password
-                })
+                body: JSON.stringify({ email, password })
             });
 
             const data = await response.json();
 
-            // Check if admin needs to change their password
-            const isFirstLogin = await checkAdminFirstLogin();
-            
             if (!response.ok) {
                 setError("Login failed. Please try again.");
                 return;
             }
 
-            if (isFirstLogin) {
-                // Redirect admin to the "Change Password" page if it's their first login
-                router.push('/changePassword');
-            } else if (data.success) {
+            if (data.success) {
                 setSuccess('Login successful!');
-                router.push("/admin/Portal"); 
-                router.refresh(); 
+                router.push("/adminPortal");
+                router.refresh();
             } else {
                 setError("Login failed. Please try again.");
             }
