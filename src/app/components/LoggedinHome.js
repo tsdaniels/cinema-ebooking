@@ -1,5 +1,5 @@
 import Image from "next/image";
-import HomePageNavbar from "@/app/components/HomePageNavBar";
+import HomePageNavbar from "./HomePageNavBar";
 
 export default function LoggedinHome() {
   return (

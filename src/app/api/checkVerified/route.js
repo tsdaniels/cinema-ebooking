@@ -1,7 +1,7 @@
 // app/api/checkVerified/route.js
 import { NextResponse } from 'next/server';
-import connectMongoDB from '@/libs/mongodb';
-import { User } from '@/models/userSchema';
+import connectMongoDB from '../../../libs/mongodb';
+import { User } from '../../../models/userSchema';
 
 export async function POST(request) {
     try {

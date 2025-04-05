@@ -1,7 +1,7 @@
 // File: app/api/movies/route.js
 import { NextResponse } from 'next/server';
-import connectDB from '@/libs/mongodb';
-import { Movie } from '@/models/movieSchema';
+import connectDB from '../../../libs/mongodb';
+import { Movie } from '../../../models/movieSchema';
 
 export async function GET() {
   try {
@@ -19,11 +19,13 @@ export async function GET() {
 export async function POST(request) {
   try {
     await connectDB();
-    const { title, trailerUrl, status } = await request.json();
+    const { title, trailerUrl, posterUrl, synopsis, duration, status, cast } = await request.json();
     
-    const newMovie = new Movie({ title, trailerUrl, status });
+    const newMovie = new Movie({ title, trailerUrl, posterUrl, synopsis, duration, status, cast });
     await newMovie.save();
     
+    
+
     return NextResponse.json(
       { message: "Movie added successfully", newMovie },
       { status: 201 }
@@ -34,4 +36,7 @@ export async function POST(request) {
       { status: 500 }
     );
   }
+
+  
+
 }
