@@ -6,13 +6,30 @@ import { useRouter } from 'next/navigation';
 export default function PaymentSuccess() {
   const router = useRouter();
   const [orderDetails, setOrderDetails] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    const storedOrder = localStorage.getItem('orderDetails');
-    if(storedOrder) {
-      setOrderDetails(JSON.parse(storedOrder));
+    async function checkAuth() {
+      try {
+        const response = await fetch('/api/checkAuth');
+        const data = await response.json();
+
+        if (data.isLoggedIn) {
+          setIsLoggedIn(true);
+          const storedOrder = localStorage.getItem('orderDetails');
+          if (storedOrder) {
+            setOrderDetails(JSON.parse(storedOrder));
+          }
+        } else {
+          router.push('/login');
+        }
+      } catch (error) {
+        console.error('Authentication check failed:', error);
+        setError("Authentication failed. Please log in again.");
+      }
     }
-  }, []);
+    checkAuth();
+  }, [router]);
 
   return (
     <div className="flex justify-center items-center h-screen bg-gradient-to-br from-black via-red-950 to-red-900 text-white">
@@ -40,9 +57,7 @@ export default function PaymentSuccess() {
           <p>Loading receipt...</p>
         )}
 
-        {/*Work in progress. Add receipt here.*/}
-        <button 
-          onClick={() => router.push('/')} 
+        <button onClick={() => router.push(isLoggedIn ? '/home' : '/')} 
           className="mt-6 px-6 py-3 bg-green-700 text-white font-bold rounded-md hover:bg-green-600 transition"
         >
           Return to Home

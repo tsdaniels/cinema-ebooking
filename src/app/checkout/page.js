@@ -1,11 +1,12 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function ShowtimeSelection() {
   const router = useRouter();
   const [isBlue, setIsBlue] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [selectedShowtime, setSelectedShowtime] = useState(null);
   const [tickets, setTickets] = useState({ adult: 0, child: 0, senior: 0 });
   const [selectedSeats, setSelectedSeats] = useState([]);
@@ -30,6 +31,51 @@ export default function ShowtimeSelection() {
       alert(`You can only select ${totalTickets} seats.`);
     }
   };
+
+  useEffect(() => {
+    async function checkAuth() {
+      try {
+        const response = await fetch('/api/checkAuth');
+        const data = await response.json();
+
+        if (data.isLoggedIn) {
+          setIsLoggedIn(true);
+        } else {
+          setIsLoggedIn(false);
+        }
+      } catch (error) {
+        console.error('Authentication check failed:', error);
+        setError("Authentication failed. Please log in again.");
+        setIsLoggedIn(false);
+      }
+    }
+    checkAuth();
+  }, [router]);
+
+  if (!isLoggedIn) {
+    return (
+      <div className="flex bg-gradient-to-br from-black via-red-950 to-red-900 text-white h-screen p-6 gap-6 pt-6">
+        <div className="w-full flex flex-col items-center justify-center bg-black bg-opacity-35 backdrop-blur-lg font-bold font-sans rounded-lg m-6 ml-16 mr-16 p-8">
+          <h2 className="text-4xl font-bold text-red-500">Login Required</h2>
+          <p className="text-xl text-white mt-4">
+            You need to log in to proceed with the checkout and purchase your tickets.
+          </p>
+          <div className="mt-6">
+            <button 
+              onClick={() => router.push('/login')} 
+              className="px-6 py-3 text-lg text-white bg-red-700 hover:bg-red-800 rounded-md">
+              Login
+            </button>
+            <button 
+              onClick={() => router.push('/')} 
+              className="ml-4 px-6 py-3 text-lg text-white bg-gray-700 hover:bg-gray-600 rounded-md">
+              Return to Homepage
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex bg-gradient-to-br from-black via-red-950 to-red-900 text-white h-screen p-6 gap-6 pt-6">
@@ -177,7 +223,7 @@ export default function ShowtimeSelection() {
           <span className="relative z-10">Pay Now</span>
         </button>
         <button 
-          onClick={() => router.push('/')} 
+          onClick={() => {router.push(isLoggedIn ? '/home' : '/');}}
           className="mt-3 p-2 bg-gray-700 rounded mr-3 w-full hover:bg-gray-600 transition-colors duration-300"
         >
           Cancel
