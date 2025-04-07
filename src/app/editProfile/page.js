@@ -143,8 +143,26 @@ export default function EditProfile() {
       if (!response.ok) throw new Error("Failed to update profile");
       
       const data = await response.json();
-      console.log("Update successful:", data);
+
+      const send = await fetch("/api/email/profileChanged", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          newProfileData: data.profile,
+          email: email
+        }),
+      });
       
+      const result = await send.json();
+
+      if (!result) {
+        throw new Error("There was an error sending the email.");
+      }
+      
+      if (result.success != true) {
+        throw new Error(result.message);
+      }
+
       setSuccess("Profile Successfully Updated!");
       setError("");
       setTimeout(() => {

@@ -8,7 +8,8 @@ const userSchema = new mongoose.Schema({
     verificationToken: { type: String },
     verificationTokenExpires: { type: Date },
     resetToken: { type: String },
-    resetTokenExpires: { type: Date }
+    resetTokenExpires: { type: Date },
+    promotions: {type: Boolean, default: false}
 }, { collection: 'credentials' });
 
 export const User = mongoose.models.User || mongoose.model('User', userSchema);

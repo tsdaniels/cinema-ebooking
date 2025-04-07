@@ -6,7 +6,7 @@ const cardSchema = new mongoose.Schema({
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
     cardNumber: { type: String, required: true },
-    expirationDate: { type: Date, required: true },
+    expirationDate: { type: String, required: true },
     cvv: { type: String, required: true },
     streetNumber: {type: String, required: true},
     streetName: {type: String, required: true},

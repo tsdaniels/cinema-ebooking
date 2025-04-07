@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import connectDB from "@/libs/mongodb";
 import { User } from "@/models/userSchema";
 import { NextResponse } from "next/server";
+import nodemailer from 'nodemailer';
 
 export async function POST(request) {
     try {
@@ -39,6 +40,29 @@ export async function POST(request) {
         user.resetToken = undefined;
         user.resetTokenExpires = undefined;
         await user.save();
+
+
+        // Set up email transport
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+            user: process.env.EMAIL_ADDRESS,
+            pass: process.env.EMAIL_PASSWORD,
+            },
+        });
+
+        const mailOptions = {
+            from: process.env.EMAIL_ADDRESS,
+            to: email,
+            subject: 'Password Changed!',
+            html: `
+                <h1>Your Password has been changed.</h1>
+                <p style="font-size: 14px; color: #777;">If you did not make these changes or have any questions, please contact our support team.</p>
+                <p style="text-align: center; margin-top: 30px; font-size: 12px; color: #999;">© ${new Date().getFullYear()} Cinebook. All rights reserved.</p>
+            `
+            };
+
+            await transporter.sendMail(mailOptions);
 
        // Return success message
         return NextResponse.json({
