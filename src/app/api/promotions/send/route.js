@@ -1,8 +1,8 @@
-import dbConnect from '@/lib/dbConnect';
-import Promotion from '@/models/Promotion';
-import User from '@/models/User';
-import nodemailer from 'nodemailer';
-
+import { NextResponse } from 'next/server';
+import connectMongoDB from '@/libs/mongodb';
+import { User } from '@/models/userSchema';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 export async function POST(req) {
   await dbConnect();
 
