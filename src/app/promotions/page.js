@@ -1,66 +1,42 @@
 'use client';
 
-import { useState } from 'react';
-
-// Mock function to simulate database search (Replace with actual API call)
-async function fetchMoviesFromDatabase(query) {
-  if (!query) return [];
-
-  const databaseMovies = [
-    { id: 1, title: 'Inception', director: 'Christopher Nolan', year: 2010 },
-    { id: 2, title: 'Interstellar', director: 'Christopher Nolan', year: 2014 },
-    {
-      id: 3,
-      title: 'The Dark Knight',
-      director: 'Christopher Nolan',
-      year: 2008,
-    },
-    { id: 4, title: 'Dune', director: 'Denis Villeneuve', year: 2021 },
-    {
-      id: 5,
-      title: 'Blade Runner 2049',
-      director: 'Denis Villeneuve',
-      year: 2017,
-    },
-  ];
-
-  return databaseMovies.filter((movie) =>
-    movie.title.toLowerCase().includes(query.toLowerCase())
-  );
-}
+import { useEffect, useState } from 'react';
 
 export default function ManagePromotions() {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState([]);
-  const [promotedMovies, setPromotedMovies] = useState([]);
+  const [movies, setMovies] = useState([]);
+  const [promotions, setPromotions] = useState([]);
+  const [form, setForm] = useState({ movieId: '', title: '', message: '' });
 
-  // Handle search and fetch movies from "database"
-  const handleSearch = async (query) => {
-    setSearchQuery(query);
-    const results = await fetchMoviesFromDatabase(query);
-    setSearchResults(results);
+  useEffect(() => {
+    fetch('/api/movies')
+      .then((res) => res.json())
+      .then(setMovies);
 
-    // Clear search bar after submitting
-    setSearchQuery('');
+    fetch('/api/promotions')
+      .then((res) => res.json())
+      .then(setPromotions);
+  }, []);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    await fetch('/api/promotions', {
+      method: 'POST',
+      body: JSON.stringify(form),
+      headers: { 'Content-Type': 'application/json' },
+    });
+    window.location.reload();
   };
 
-  // Handle Enter key press for search
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      handleSearch(searchQuery);
+  const sendPromotion = async (id) => {
+    const res = await fetch('/api/promotions/send', {
+      method: 'POST',
+      body: JSON.stringify({ promotionId: id }),
+      headers: { 'Content-Type': 'application/json' },
+    });
+    if (res.ok) {
+      alert('Promotion sent!');
+      window.location.reload();
     }
-  };
-
-  // Add movie to the promotion list
-  const handleAddPromotion = (movie) => {
-    if (!promotedMovies.some((m) => m.id === movie.id)) {
-      setPromotedMovies([...promotedMovies, movie]);
-    }
-  };
-
-  // Remove movie from promotions
-  const handleRemovePromotion = (id) => {
-    setPromotedMovies(promotedMovies.filter((movie) => movie.id !== id));
   };
 
   return (
@@ -69,71 +45,75 @@ export default function ManagePromotions() {
         🎟️ Manage Promotions
       </h1>
 
-      {/* Search Bar */}
-      <div className="w-full max-w-lg mb-6">
+      <form
+        onSubmit={handleSubmit}
+        className="w-full max-w-2xl bg-gray-900 p-6 rounded-lg shadow-lg border border-gray-800 space-y-4"
+      >
+        <select
+          value={form.movieId}
+          onChange={(e) => setForm({ ...form, movieId: e.target.value })}
+          required
+          className="w-full p-3 text-lg bg-black border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+        >
+          <option value="">🎬 Select a movie</option>
+          {movies.map((movie) => (
+            <option key={movie._id} value={movie._id}>
+              {movie.title}
+            </option>
+          ))}
+        </select>
+
         <input
           type="text"
-          placeholder="Search for a movie..."
-          className="w-full p-3 text-lg border border-gray-700 rounded-md bg-gray-900 text-white focus:outline-none focus:ring-2 focus:ring-red-500"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          onKeyDown={handleKeyPress} // Search on Enter key press
+          placeholder="Promotion Title"
+          value={form.title}
+          onChange={(e) => setForm({ ...form, title: e.target.value })}
+          required
+          className="w-full p-3 text-lg bg-black border border-gray-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-red-500"
         />
-      </div>
 
-      {/* Search Results */}
-      {searchResults.length > 0 && (
-        <div className="w-full max-w-lg bg-gray-900 p-4 rounded-md shadow-lg border border-gray-800">
-          <h2 className="text-xl font-bold mb-2 text-red-400">
-            🔎 Search Results
-          </h2>
-          {searchResults.map((movie) => (
-            <div
-              key={movie.id}
-              className="flex justify-between items-center bg-gray-800 p-3 rounded-md mb-2"
-            >
-              <div>
-                <h3 className="text-lg font-semibold">{movie.title}</h3>
-                <p className="text-sm text-gray-400">
-                  {movie.director} • {movie.year}
-                </p>
-              </div>
-              <button
-                onClick={() => handleAddPromotion(movie)}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-md"
-              >
-                ✨ Promote
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
+        <textarea
+          placeholder="Promotion Message"
+          value={form.message}
+          onChange={(e) => setForm({ ...form, message: e.target.value })}
+          required
+          className="w-full p-3 text-lg bg-black border border-gray-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-red-500"
+        />
 
-      {/* Promoted Movies List */}
-      <div className="w-full max-w-4xl mt-8">
+        <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-md transition">
+          📢 Submit Promotion
+        </button>
+      </form>
+
+      <div className="w-full max-w-4xl mt-10">
         <h2 className="text-2xl font-bold text-red-500 mb-4">
-          📢 Movies in Promotion
+          📜 Existing Promotions
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {promotedMovies.length > 0 ? (
-            promotedMovies.map((movie) => (
+          {promotions.length > 0 ? (
+            promotions.map((promo) => (
               <div
-                key={movie.id}
+                key={promo._id}
                 className="bg-gray-900 p-5 rounded-lg shadow-md border border-gray-800 hover:border-blue-500 transition"
               >
-                <h3 className="text-xl font-semibold">{movie.title}</h3>
-                <p className="text-sm text-gray-400">🎭 {movie.director}</p>
-                <p className="text-sm text-gray-400">📅 {movie.year}</p>
+                <h3 className="text-xl font-semibold text-white">
+                  {promo.title}
+                </h3>
+                <p className="text-sm text-gray-400">
+                  🎬 {promo.movieId?.title}
+                </p>
+                <p className="text-sm text-gray-400">💬 {promo.message}</p>
                 <button
-                  onClick={() => handleRemovePromotion(movie.id)}
-                  className="mt-3 bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md"
+                  onClick={() => sendPromotion(promo._id)}
+                  disabled={promo.sent}
+                  className="mt-3 bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md disabled:opacity-50"
                 >
-                  ❌ Remove
+                  {promo.sent ? '✅ Sent' : '📨 Send Promotion'}
                 </button>
               </div>
             ))
           ) : (
-            <p className="text-gray-400">No movies selected for promotion.</p>
+            <p className="text-gray-400">No promotions available.</p>
           )}
         </div>
       </div>
