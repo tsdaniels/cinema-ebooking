@@ -19,9 +19,9 @@ export async function GET() {
 export async function POST(request) {
   try {
     await connectDB();
-    const { title, trailerUrl, posterUrl, synopsis, duration, status, cast } = await request.json();
+    const { title, year, trailerUrl, posterUrl, synopsis, duration, status, director, producer, rating, cast } = await request.json();
     
-    const newMovie = new Movie({ title, trailerUrl, posterUrl, synopsis, duration, status, cast });
+    const newMovie = new Movie({ title, year, trailerUrl, posterUrl, synopsis, duration, status, director, producer, rating, cast });
     await newMovie.save();
     
     

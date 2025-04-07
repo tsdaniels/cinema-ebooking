@@ -51,7 +51,7 @@ export default function MovieInfo() {
             </div>
             <div className="p-8">
             <h2 className="mb-2 text-xl font-bold">{movie.title}</h2>
-            <p>{movie.year || "2025"} • {movie.duration || "1h 58m"}</p>
+            <p>{movie.year} • {movie.duration || "1h 58m"}</p>
             <button className="mt-2 bg-blue-300 text-blue-700 p-3 rounded-lg font-bold ">
                 {movie.rating || "PG-13"}
             </button>
@@ -82,7 +82,7 @@ export default function MovieInfo() {
                    <div>
                     {movie.cast.map((actor, index) => {
                         return(
-                        <div key={index} className="font-bold cast-card border border-gray-400 rounded-lg p-4 w-[200px] flex justify-center items-center">
+                        <div key={index} className="font-bold mt-4 cast-card border border-gray-400 rounded-lg p-4 w-[200px] flex justify-center items-center">
                             <p>{actor.name}</p>
                         </div>
                         );

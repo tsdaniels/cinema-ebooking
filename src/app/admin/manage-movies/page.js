@@ -2,129 +2,64 @@
 
 import { useState } from 'react';
 
-// Mock function to simulate database search (Replace with actual API call)
+// Mock function to simulate database search
 async function fetchMoviesFromDatabase(query) {
   if (!query) return [];
-
-  
-
   return databaseMovies.filter((movie) =>
     movie.title.toLowerCase().includes(query.toLowerCase())
   );
 }
 
 export default function ManageMovies() {
-  let id = 1;
-  const [newMovie, setNewMovie] = useState({
-    title: '',
-    trailerUrl: '',
-    status: '',
-  });
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setNewMovie((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleAddMovie = async () => {
-    if (!newMovie.title || !newMovie.trailerUrl || !newMovie.status) {
-      alert('Please fill in all fields.');
-      return;
-    }
-
-    try {
-      const response = await fetch("http://localhost:5000/api/movies/add", {
-        method: 'POST', 
-        headers: {
-          'Content-Type': 'application/json',
-        }, 
-        body: JSON.stringify(newMovie),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to add movie");
-      }
-
-      const data = await response.json();
-      console.log("Movie added successfully", data);
-
-      setNewMovie({
-        title: '',
-        trailerUrl: '',
-        status: '',
-      });
-
-      alert("Movie added successfully!");
-    } catch (error) {
-      console.error("Error adding movie:", error);
-      alert("Failed to add movie. Please try again");
-    }
-
-    setSelectedMovies((prevMovies) => [
-      ...prevMovies,
-      {...newMovie, id: id},
-      id++,
-    ]);
-
-  };
-
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [selectedMovies, setSelectedMovies] = useState([]);
+
   const [newMovie, setNewMovie] = useState({
     title: '',
     director: '',
     year: '',
   });
 
-  // handle search and fetch movies from "database"
   const handleSearch = async (query) => {
     setSearchQuery(query);
     const results = await fetchMoviesFromDatabase(query);
     setSearchResults(results);
-    setSearchQuery(''); // clears search
+    setSearchQuery('');
   };
 
-  // handle enter key press for search
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
       handleSearch(searchQuery);
     }
   };
 
-  // add movie to manage list
   const handleAddMovie = (movie) => {
     if (!selectedMovies.some((m) => m.title === movie.title)) {
       setSelectedMovies([...selectedMovies, movie]);
     }
   };
 
-  //remove movie from the pagee
   const handleDeleteMovie = (id) => {
     setSelectedMovies(selectedMovies.filter((movie) => movie.id !== id));
   };
 
-  // handle new movie input change
   const handleNewMovieChange = (e) => {
     setNewMovie({ ...newMovie, [e.target.name]: e.target.value });
   };
 
-  // handles adding a completely different movie
   const handleAddNewMovie = () => {
     if (!newMovie.title || !newMovie.director || !newMovie.year) return;
 
     const newMovieEntry = {
-      id: Date.now(), // temporary unique id
+      id: Date.now(),
       title: newMovie.title,
       director: newMovie.director,
       year: newMovie.year,
     };
 
     handleAddMovie(newMovieEntry);
-    setNewMovie({ title: '', director: '', year: '' }); // Reset form
+    setNewMovie({ title: '', director: '', year: '' });
   };
 
   return (
@@ -133,7 +68,7 @@ export default function ManageMovies() {
         🎬 Manage Movies
       </h1>
 
-      {/* Add New Movie */}
+      {/* Search */}
       <div className="w-full max-w-lg mb-6">
         <input
           type="text"
@@ -148,9 +83,7 @@ export default function ManageMovies() {
       {/* Search Results */}
       {searchResults.length > 0 && (
         <div className="w-full max-w-lg bg-gray-900 p-4 rounded-md shadow-lg border border-gray-800">
-          <h2 className="text-xl font-bold mb-2 text-red-400">
-            🔎 Search Results
-          </h2>
+          <h2 className="text-xl font-bold mb-2 text-red-400">🔎 Search Results</h2>
           {searchResults.map((movie) => (
             <div
               key={movie.id}
@@ -158,12 +91,10 @@ export default function ManageMovies() {
             >
               <div>
                 <h3 className="text-lg font-semibold">{movie.title}</h3>
-                <p className="text-sm text-gray-400">
-                  {movie.director} • {movie.year}
-                </p>
+                <p className="text-sm text-gray-400">{movie.director} • {movie.year}</p>
               </div>
               <button
-                onClick={() => setSelectedMovies([...selectedMovies, movie])}
+                onClick={() => handleAddMovie(movie)}
                 className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md"
               >
                 ➕ Add
@@ -173,11 +104,9 @@ export default function ManageMovies() {
         </div>
       )}
 
-      {/* Add New Movie Section */}
+      {/* Add New Movie */}
       <div className="w-full max-w-lg mt-8 p-6 bg-gray-900 rounded-md shadow-lg border border-gray-800">
-        <h2 className="text-xl font-bold text-red-400 mb-4">
-          ➕ Add New Movie
-        </h2>
+        <h2 className="text-xl font-bold text-red-400 mb-4">➕ Add New Movie</h2>
         <input
           type="text"
           name="title"
@@ -210,11 +139,9 @@ export default function ManageMovies() {
         </button>
       </div>
 
-      {/* Selected Movies List */}
+      {/* Selected Movies */}
       <div className="w-full max-w-4xl mt-8">
-        <h2 className="text-2xl font-bold text-red-500 mb-4">
-          🎥 Movies in Use
-        </h2>
+        <h2 className="text-2xl font-bold text-red-500 mb-4">🎥 Movies in Use</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {selectedMovies.length > 0 ? (
             selectedMovies.map((movie) => (

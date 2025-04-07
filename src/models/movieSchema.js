@@ -8,6 +8,10 @@ const movieSchema = new mongoose.Schema({
     synopsis: {type: String, trim: true},
     duration: {type: String, trim: true},
     status: { type: String, enum: ['showing_now', 'coming_soon'] },
+    director: {type: String },
+    producer: { type: String },
+    rating: { type: String, enum: ['G', 'PG', 'PG-13', 'R', 'NC-17'] },
+    year: { type: String },
     cast: {
         type: [{
             name: { type: String }
