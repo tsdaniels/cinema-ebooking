@@ -10,6 +10,7 @@ export default function ManageUsers() {
     const [showModal, setShowModal] = useState(false);
     const [newUser, setNewUser] = useState({ firstName: '', lastName: '', email: '', role: 'User', status: 'active' });
     const [loading, setLoading] = useState(true);
+    const [message, setMessage] = useState({ text: '', type: '' });
 
     useEffect(() => {
         async function fetchUsers() {
@@ -36,36 +37,39 @@ export default function ManageUsers() {
 
     const handleAddUser = async () => {
         try {
-            console.log(newUser);
             const res = await fetch('/api/addUser', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(newUser),
             });
-
+    
             const data = await res.json();
             if (data.success) {
-                setUsers([...users, data.user]);
+                setUsers((prevUsers) => [...prevUsers, data.user]);
                 setShowModal(false);
                 setNewUser({ firstName: '', lastName: '', email: '', role: 'User', status: 'active' });
+                setMessage({ text: 'User added successfully and email sent!', type: 'success' });
             } else {
                 console.error("Error:", data.message);
+                setMessage({ text: data.message || 'Failed to add user', type: 'error' });
             }
         } catch (error) {
             console.error("Error adding user:", error);
+            setMessage({ text: 'An error occurred while adding the user', type: 'error' });
         }
     };
 
-    const handleDeleteUser = async (id) => {
+    const handleDeleteUser = async (email) => {
         try {
-            const res = await fetch(`/api/deleteUser`, {
+            const res = await fetch(`/api/deleteUser/`, {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id }),
+                body: JSON.stringify({ email }), 
             });
+    
             const data = await res.json();
-            if(data.success) {
-                setUsers(users.filter(user => user._id !== id));
+            if (data.success) {
+                setUsers((prevUsers) => prevUsers.filter((user) => user.email !== email)); 
             } else {
                 console.error("Error deleting user:", data.message);
             }
@@ -86,13 +90,19 @@ export default function ManageUsers() {
         <div className="relative w-full min-h-screen bg-gradient-to-br from-black via-red-950 to-red-900 overflow-hidden">
             <h1 className="flex justify-center font-sans text-3xl text-white mt-3 pt-3 font-bold">Manage Users</h1>
             
+            {message.text && (
+                <div className={`p-2 mb-4 text-sm rounded ${message.type === 'success' ? 'bg-green-600' : 'bg-red-600'}`}>
+                    {message.text}
+                </div>
+            )}
+
             <div className="flex flex-col bg-black bg-opacity-35 backdrop-blur-lg font-bold font-sans min-h-1/2 rounded-lg m-6 ml-16 mr-16 border-black p-6">
                 <div className="flex justify-end mb-4">
                     <button 
                         className="flex items-center bg-red-700 border-black px-6 py-2 text-lg rounded-lg"
                         onClick={() => setShowModal(true)}
                     >
-                        <FaUserPlus className="mr-2" /> Add Admin
+                        <FaUserPlus className="mr-2" /> Add User
                     </button>
                 </div>
                 
@@ -124,7 +134,7 @@ export default function ManageUsers() {
                                         <button className="text-yellow-400 hover:text-yellow-300 transition">
                                             <FaUserEdit size={20} />
                                         </button>
-                                        <button onClick={() => handleDeleteUser(user._id)} className="text-red-500 hover:text-red-400 transition">
+                                        <button onClick={() => handleDeleteUser(user.email)} className="text-red-500 hover:text-red-400 transition">
                                             <FaUserMinus size={20} />
                                         </button>
                                     </td>
@@ -157,7 +167,7 @@ export default function ManageUsers() {
                             </select>
 
                             <button onClick={handleAddUser} className="w-full bg-red-700 p-2 rounded-lg font-bold">
-                                Add Admin
+                                Add User
                             </button>
                         </div>
                     </div>
