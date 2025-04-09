@@ -10,13 +10,9 @@
     "lint": "next lint"
   },
   "dependencies": {
-<<<<<<< HEAD
-    "next": "15.1.7",
-=======
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fortawesome/react-fontawesome": "^0.2.2",
     "@next/swc-darwin-arm64": "^15.2.3",
->>>>>>> 0ac681306db10812731333b9583e39d51b416bbc
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
