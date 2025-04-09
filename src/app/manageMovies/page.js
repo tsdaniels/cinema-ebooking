@@ -18,6 +18,18 @@ const ManageMovies = () => {
         cast: [{ name: "" }]
     });
     const [deleteConfirmation, setDeleteConfirmation] = useState(null);
+    
+    // Showtimes state
+    const [selectedMovieId, setSelectedMovieId] = useState("");
+    const [showShowtimesForm, setShowShowtimesForm] = useState(false);
+    const [newShowtime, setNewShowtime] = useState({
+        date: "",
+        time: "",
+        auditorium: "1",
+        price: "12.50"
+    });
+    const [showtimes, setShowtimes] = useState({});
+    const [showtimeErrors, setShowtimeErrors] = useState({});
 
     // Add new cast member
     const addCastMember = () => {
@@ -55,9 +67,19 @@ const ManageMovies = () => {
         }));
     };
 
+    // Handle showtime input changes
+    const handleShowtimeChange = (e) => {
+        const { id, value } = e.target;
+        setNewShowtime(prev => ({
+            ...prev,
+            [id]: value
+        }));
+    };
+
     // Fetch movies on mount
     useEffect(() => {
         fetchMovies();
+        fetchShowtimes();
     }, []);
 
     async function fetchMovies() {
@@ -69,6 +91,28 @@ const ManageMovies = () => {
         } catch (error) {
             console.error("Error fetching movies:", error);
             setErrors({ fetch: error.message });
+        }
+    }
+
+    async function fetchShowtimes() {
+        try {
+            const response = await fetch('/api/showtimes');
+            const data = await response.json();
+            if (!response.ok) throw new Error("Failed to fetch showtimes");
+            
+            // Organize showtimes by movie ID
+            const showtimesByMovie = {};
+            data.forEach(showtime => {
+                if (!showtimesByMovie[showtime.movieId]) {
+                    showtimesByMovie[showtime.movieId] = [];
+                }
+                showtimesByMovie[showtime.movieId].push(showtime);
+            });
+            
+            setShowtimes(showtimesByMovie);
+        } catch (error) {
+            console.error("Error fetching showtimes:", error);
+            setErrors(prev => ({ ...prev, fetchShowtimes: error.message }));
         }
     }
 
@@ -99,6 +143,25 @@ const ManageMovies = () => {
         } catch (error) {
             console.error("Error deleting movie:", error);
             setErrors({ delete: error.message });
+        }
+    }
+
+    async function handleDeleteShowtime(showtimeId) {
+        try {
+            const response = await fetch(`/api/showtimes/${showtimeId}`, {
+                method: 'DELETE',
+            });
+            
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || "Failed to delete showtime");
+            }
+            
+            // Refresh showtimes
+            await fetchShowtimes();
+        } catch (error) {
+            console.error("Error deleting showtime:", error);
+            setShowtimeErrors({ delete: error.message });
         }
     }
 
@@ -177,6 +240,59 @@ const ManageMovies = () => {
         }
     }
 
+    async function handleShowtimeSubmit(e) {
+        e.preventDefault();
+        const newErrors = {};
+
+        // Validate required fields
+        if (!selectedMovieId) newErrors.movieId = "Please select a movie";
+        if (!newShowtime.date) newErrors.date = "Date is required";
+        if (!newShowtime.time) newErrors.time = "Time is required";
+        if (!newShowtime.auditorium) newErrors.auditorium = "Auditorium is required";
+        if (!newShowtime.price) newErrors.price = "Price is required";
+
+        setShowtimeErrors(newErrors);
+        if (Object.keys(newErrors).length > 0) return;
+
+        try {
+            const payload = {
+                ...newShowtime,
+                movieId: selectedMovieId
+            };
+
+            const response = await fetch('/api/showtimes', {
+                method: 'POST',
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || "Failed to add showtime");
+            }
+
+            // Reset form and refresh showtimes
+            await fetchShowtimes();
+            setNewShowtime({
+                date: "",
+                time: "",
+                auditorium: "1",
+                price: "12.50"
+            });
+            
+            // Keep the selected movie but hide the form
+            setShowShowtimesForm(false);
+        } catch (error) {
+            console.error("Error adding showtime:", error);
+            setShowtimeErrors({ submit: error.message });
+        }
+    }
+
+    const formatDate = (dateString) => {
+        const options = { weekday: 'short', month: 'short', day: 'numeric' };
+        return new Date(dateString).toLocaleDateString(undefined, options);
+    };
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-black via-black to-red-950">
             <div className="absolute justify-center flex items-center inset-0 bg-[url('/pattern.png')] opacity-20 pointer-events-none" />
@@ -224,7 +340,40 @@ const ManageMovies = () => {
                                     <p className="text-sm mb-2">{movie.duration} | {movie.rating}</p>
                                     <p className="text-sm mb-4 line-clamp-2">{movie.synopsis}</p>
                                     
-                                    <div className="flex justify-end">
+                                    {/* Showtimes section */}
+                                    {showtimes[movie.id || movie._id] && showtimes[movie.id || movie._id].length > 0 && (
+                                        <div className="mb-4">
+                                            <h4 className="text-sm font-bold mb-2">Showtimes:</h4>
+                                            <div className="flex flex-wrap gap-2">
+                                                {showtimes[movie.id || movie._id].map(showtime => (
+                                                    <div key={showtime.id || showtime._id} className="bg-red-800/30 p-1 rounded text-xs flex items-center">
+                                                        <span>
+                                                            {formatDate(showtime.date)} {showtime.time}
+                                                            {" | "}Aud: {showtime.auditorium}
+                                                        </span>
+                                                        <button 
+                                                            onClick={() => handleDeleteShowtime(showtime.id || showtime._id)}
+                                                            className="ml-2 text-red-400 hover:text-red-200"
+                                                        >
+                                                            ×
+                                                        </button>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                    
+                                    <div className="flex justify-between">
+                                        <button
+                                            onClick={() => {
+                                                setSelectedMovieId(movie.id || movie._id);
+                                                setShowShowtimesForm(true);
+                                            }}
+                                            className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm"
+                                        >
+                                            Add Showtime
+                                        </button>
+                                        
                                         {deleteConfirmation === movie.id || deleteConfirmation === movie._id ? (
                                             <div className="flex space-x-2">
                                                 <button
@@ -261,7 +410,102 @@ const ManageMovies = () => {
                     </div>
                 </div>
                 
-                {/* Form section */}
+                {/* Showtimes Form */}
+                {showShowtimesForm && (
+                    <div className="flex justify-center items-center mb-12">
+                        <form 
+                            onSubmit={handleShowtimeSubmit} 
+                            className="text-white w-3/5 bg-red-700/15 backdrop-blur-sm border rounded-lg p-8"
+                        >
+                            <h2 className="text-center text-xl font-bold mb-6">
+                                Add Showtime for {movies.find(m => (m.id || m._id) === selectedMovieId)?.title}
+                            </h2>
+                            
+                            {showtimeErrors.submit && (
+                                <div className="bg-red-500 bg-opacity-50 text-white p-4 rounded-lg mb-6">
+                                    {showtimeErrors.submit}
+                                </div>
+                            )}
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {/* Date */}
+                                <div>
+                                    <label className="block mb-2">Date:</label>
+                                    <input
+                                        id="date"
+                                        type="date"
+                                        value={newShowtime.date}
+                                        onChange={handleShowtimeChange}
+                                        className="w-full text-black border border-gray-400 rounded-lg p-2"
+                                    />
+                                    {showtimeErrors.date && <p className="text-red-500 text-sm mt-1">{showtimeErrors.date}</p>}
+                                </div>
+                                
+                                {/* Time */}
+                                <div>
+                                    <label className="block mb-2">Time:</label>
+                                    <input
+                                        id="time"
+                                        type="time"
+                                        value={newShowtime.time}
+                                        onChange={handleShowtimeChange}
+                                        className="w-full text-black border border-gray-400 rounded-lg p-2"
+                                    />
+                                    {showtimeErrors.time && <p className="text-red-500 text-sm mt-1">{showtimeErrors.time}</p>}
+                                </div>
+                                
+                                {/* Auditorium */}
+                                <div>
+                                    <label className="block mb-2">Auditorium:</label>
+                                    <select
+                                        id="auditorium"
+                                        value={newShowtime.auditorium}
+                                        onChange={handleShowtimeChange}
+                                        className="w-full text-black border border-gray-400 rounded-lg p-2"
+                                    >
+                                        <option value="1">Auditorium 1</option>
+                                        <option value="2">Auditorium 2</option>
+                                        <option value="3">Auditorium 3</option>
+                                        <option value="4">Auditorium 4 (IMAX)</option>
+                                        <option value="5">Auditorium 5 (3D)</option>
+                                    </select>
+                                    {showtimeErrors.auditorium && <p className="text-red-500 text-sm mt-1">{showtimeErrors.auditorium}</p>}
+                                </div>
+                                
+                                {/* Price */}
+                                <div>
+                                    <label className="block mb-2">Ticket Price ($):</label>
+                                    <input
+                                        id="price"
+                                        type="text"
+                                        value={newShowtime.price}
+                                        onChange={handleShowtimeChange}
+                                        className="w-full text-black border border-gray-400 rounded-lg p-2"
+                                    />
+                                    {showtimeErrors.price && <p className="text-red-500 text-sm mt-1">{showtimeErrors.price}</p>}
+                                </div>
+                            </div>
+                            
+                            <div className="flex justify-center space-x-4 mt-6">
+                                <button
+                                    type="submit"
+                                    className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg"
+                                >
+                                    Add Showtime
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setShowShowtimesForm(false)}
+                                    className="bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-lg"
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                )}
+                
+                {/* Add Movie Form section */}
                 <div className="flex justify-center items-center">
                     <form 
                         onSubmit={handleSubmit} 
