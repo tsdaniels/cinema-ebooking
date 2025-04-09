@@ -131,9 +131,9 @@ export default function ManageUsers() {
                                         </button>
                                     </td>
                                     <td className='border border-gray-600 p-3 flex justify-center space-x-4'>
-                                        <button className="text-yellow-400 hover:text-yellow-300 transition">
+                                        {/* <button className="text-yellow-400 hover:text-yellow-300 transition">
                                             <FaUserEdit size={20} />
-                                        </button>
+                                        </button> */}
                                         <button onClick={() => handleDeleteUser(user.email)} className="text-red-500 hover:text-red-400 transition">
                                             <FaUserMinus size={20} />
                                         </button>
