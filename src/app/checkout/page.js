@@ -104,9 +104,16 @@ export default function Checkout() {
     // Check authentication status
     const checkUserAuth = async () => {
       setCheckingAuth(true);
-      const authData = await checkAuth();
-      
-      if (authData.isLoggedIn) {
+      try {
+        const authData = await checkAuth();
+        
+        if (!authData.isLoggedIn) {
+          // If not authenticated, redirect to login
+          const returnUrl = encodeURIComponent(`/checkout?movieId=${movieId}${showtimeId ? `&showtimeId=${showtimeId}` : ''}`);
+          router.push(`/login?redirect=${returnUrl}`);
+          return;
+        }
+        
         setIsAuthenticated(true);
         // Try to get user info, but don't block if it fails
         const userInfo = await getUserInfo(authData.email);
@@ -117,17 +124,23 @@ export default function Checkout() {
         } else {
           setEmail(authData.email || "");
         }
+      } catch (error) {
+        console.error("Auth check error:", error);
+        // If auth check fails, redirect to login
+        const returnUrl = encodeURIComponent(`/checkout?movieId=${movieId}${showtimeId ? `&showtimeId=${showtimeId}` : ''}`);
+        router.push(`/login?redirect=${returnUrl}`);
+        return;
+      } finally {
+        setCheckingAuth(false);
       }
-      
-      setCheckingAuth(false);
     };
     
     checkUserAuth();
-  }, []);
+  }, [router, movieId, showtimeId]);
 
   // Second effect - fetch movie details
   useEffect(() => {
-    if (movieId && isClient) {
+    if (movieId && isClient && isAuthenticated) {
       const fetchMovieDetails = async () => {
         try {
           const response = await fetch(`/api/movies/${movieId}`);
@@ -142,11 +155,11 @@ export default function Checkout() {
       
       fetchMovieDetails();
     }
-  }, [movieId, isClient]);
+  }, [movieId, isClient, isAuthenticated]);
 
   // Third effect - load showtimes and selected showtime
   useEffect(() => {
-    if (!movieId || !isClient) return;
+    if (!movieId || !isClient || !isAuthenticated) return;
     
     const loadShowtimeData = async () => {
       setLoading(true);
@@ -188,7 +201,7 @@ export default function Checkout() {
     };
     
     loadShowtimeData();
-  }, [movieId, showtimeId, isClient]);
+  }, [movieId, showtimeId, isClient, isAuthenticated]);
 
   const calculateTotalPrice = () => {
     const price = selectedShowtime?.price || 10;
@@ -308,7 +321,7 @@ export default function Checkout() {
       const result = await response.json();
       
       if (response.ok) {
-        // After booking, redirect to checkoutSuccess page instead of confirmation page
+        // After booking, redirect to checkoutSuccess page
         router.push(`/checkoutSuccess?bookingId=${result.bookingId}`);
       } else {
         setError(result.message || "Booking failed. Please try again.");
@@ -373,23 +386,6 @@ export default function Checkout() {
 
       {error && <div className="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">{error}</div>}
 
-      {!isAuthenticated && (
-        <div className="mt-4 p-4 bg-yellow-50 border border-yellow-400 rounded-lg">
-          <p className="text-yellow-800 mb-2">
-            For a better experience and to save your booking history, please log in.
-          </p>
-          <button
-            onClick={handleLoginRedirect}
-            className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded"
-          >
-            Log In
-          </button>
-          <p className="text-sm text-gray-600 mt-2">
-            You can continue as a guest, but you'll need to log in to complete the booking.
-          </p>
-        </div>
-      )}
-
       <div className="mt-6">
         <h2 className="text-xl font-semibold">Showtime Selection:</h2>
         <div className="mt-2">
@@ -405,12 +401,31 @@ export default function Checkout() {
               <option key={showtime._id || showtime.id || `showtime-${index}`} value={showtime._id || showtime.id}>
                 {showtime.date && typeof showtime.date === 'string' 
                   ? new Date(showtime.date).toLocaleDateString() 
-                  : 'Date unavailable'} - {showtime.time} - ${showtime.price || 10}
+                  : 'Date unavailable'} - {showtime.time} - Auditorium {showtime.auditorium} - ${showtime.price || 10}
               </option>
             ))}
           </select>
         </div>
       </div>
+      
+      {/* Detailed showtime information box */}
+      {selectedShowtime && (
+        <div className="mt-4 p-4 bg-gray-100 rounded-lg">
+          <div className="flex justify-between items-center mb-2">
+            <h3 className="font-semibold text-lg">Selected Showtime Details:</h3>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <p><span className="font-medium">Date:</span> {selectedShowtime.date && new Date(selectedShowtime.date).toLocaleDateString()}</p>
+              <p><span className="font-medium">Time:</span> {selectedShowtime.time}</p>
+            </div>
+            <div>
+              <p><span className="font-medium">Auditorium:</span> {selectedShowtime.auditorium}</p>
+              <p><span className="font-medium">Price:</span> ${selectedShowtime.price}</p>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="mt-6">
         <h2 className="text-xl font-semibold">Ticket Selection:</h2>
@@ -479,6 +494,9 @@ export default function Checkout() {
           
           <div className="mt-4 bg-gray-100 p-4 rounded-lg">
             <div className="w-full h-8 bg-gray-800 mb-6 text-center text-white py-1 rounded">Screen</div>
+            <div className="text-center mb-2">
+              <p className="text-sm font-medium text-gray-600">Auditorium {selectedShowtime?.auditorium}</p>
+            </div>
             <div className="grid grid-cols-8 gap-2">
               {seatOptions.map((seat) => (
                 <button
@@ -601,45 +619,57 @@ export default function Checkout() {
 
         <div className="mt-6 bg-gray-100 p-4 rounded-lg">
           <h2 className="text-xl font-semibold">Order Summary:</h2>
-          {numTickets.adult > 0 && (
-            <div className="flex justify-between mt-2">
-              <span>Adult tickets (x{numTickets.adult})</span>
-              <span>${(numTickets.adult * (selectedShowtime?.price || 10)).toFixed(2)}</span>
-            </div>
-          )}
-          {numTickets.child > 0 && (
-            <div className="flex justify-between mt-1">
-              <span>Child tickets (x{numTickets.child})</span>
-              <span>${(numTickets.child * (selectedShowtime?.price || 10) * 0.5).toFixed(2)}</span>
-            </div>
-          )}
-          {numTickets.senior > 0 && (
-            <div className="flex justify-between mt-1">
-              <span>Senior tickets (x{numTickets.senior})</span>
-              <span>${(numTickets.senior * (selectedShowtime?.price || 10) * 0.75).toFixed(2)}</span>
-            </div>
-          )}
+          <div className="mt-2">
+            <p className="font-medium">Showing: {movieDetails?.title}</p>
+            {selectedShowtime && (
+              <p className="text-sm text-gray-700">
+                {selectedShowtime.date && new Date(selectedShowtime.date).toLocaleDateString()} at {selectedShowtime.time} • Auditorium {selectedShowtime.auditorium}
+              </p>
+            )}
+          </div>
+          <div className="mt-2 border-t border-gray-300 pt-2">
+            {numTickets.adult > 0 && (
+              <div className="flex justify-between mt-2">
+                <span>Adult tickets (x{numTickets.adult})</span>
+                <span>${(numTickets.adult * (selectedShowtime?.price || 10)).toFixed(2)}</span>
+              </div>
+            )}
+            {numTickets.child > 0 && (
+              <div className="flex justify-between mt-1">
+                <span>Child tickets (x{numTickets.child})</span>
+                <span>${(numTickets.child * (selectedShowtime?.price || 10) * 0.5).toFixed(2)}</span>
+              </div>
+            )}
+            {numTickets.senior > 0 && (
+              <div className="flex justify-between mt-1">
+                <span>Senior tickets (x{numTickets.senior})</span>
+                <span>${(numTickets.senior * (selectedShowtime?.price || 10) * 0.75).toFixed(2)}</span>
+              </div>
+            )}
+          </div>
           <div className="flex justify-between mt-2 pt-2 border-t border-gray-300 font-bold">
             <span>Total</span>
             <span>${calculateTotalPrice()}</span>
           </div>
+          {selectedSeats.length > 0 && (
+            <div className="mt-2 pt-2 border-t border-gray-300">
+              <span className="font-medium">Selected Seats: </span>
+              <span>{selectedSeats.join(', ')}</span>
+            </div>
+          )}
         </div>
 
         <div className="mt-6">
           <button
             type="submit"
-            className={`${
-              isAuthenticated 
-                ? 'bg-blue-500 hover:bg-blue-600' 
-                : 'bg-gray-400'
-            } text-white p-3 rounded-lg w-full transition-colors`}
+            className="bg-blue-500 hover:bg-blue-600 text-white p-3 rounded-lg w-full transition-colors"
             disabled={
               totalTicketsCount() === 0 ||
               selectedSeats.length !== totalTicketsCount() ||
               !selectedShowtime
             }
           >
-            {isAuthenticated ? 'Complete Booking' : 'Log In to Complete Booking'}
+            Complete Booking
           </button>
         </div>
       </form>

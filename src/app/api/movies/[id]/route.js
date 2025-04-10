@@ -1,5 +1,5 @@
 import dbConnect from '../../../../libs/mongodb';
-import { Movie } from '../../../../models/movieSchema';
+import  Movie  from '../../../../models/movieSchema';
 
 export async function GET(req, { params }) {
     const { id } = params;

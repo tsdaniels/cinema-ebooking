@@ -10,7 +10,30 @@ export default function MovieInfo() {
     const [showtimes, setShowtimes] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    
+    // Add authentication state
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [authChecking, setAuthChecking] = useState(true);
 
+    // First check authentication status
+    useEffect(() => {
+        const checkAuth = async () => {
+            try {
+                const response = await fetch("/api/checkAuth");
+                const data = await response.json();
+                setIsAuthenticated(data.isLoggedIn);
+            } catch (error) {
+                console.error("Error checking authentication:", error);
+                setIsAuthenticated(false);
+            } finally {
+                setAuthChecking(false);
+            }
+        };
+      
+        checkAuth();
+    }, []);
+
+    // Fetch movie data
     useEffect(() => {
         async function fetchMovie() {
             try {
@@ -35,6 +58,7 @@ export default function MovieInfo() {
             }
         }
 
+        // Fetch showtimes for this movie
         async function fetchShowtimes() {
             try {
                 console.log(`Fetching showtimes for movie ID: ${id}`);
@@ -50,7 +74,6 @@ export default function MovieInfo() {
                         const errorData = await res.json();
                         console.log("Showtimes error:", errorData);
                         
-                        // Don't set page error for missing showtimes - just show empty state
                         if (errorData.error === "No showtimes found for this movie") {
                             console.log("No showtimes available for this movie");
                             setShowtimes([]);
@@ -63,7 +86,6 @@ export default function MovieInfo() {
                 }
             } catch (err) {
                 console.error("Error fetching showtimes:", err);
-                // Still allow the page to load even if showtimes fail
                 setShowtimes([]);
             }
         }
@@ -74,18 +96,33 @@ export default function MovieInfo() {
         }
     }, [id]);
 
+    // Handle booking with authentication check
     const handleBookTickets = (showtimeId) => {
-        // Make sure we're using the correct ID field
+        if (!isAuthenticated) {
+            // Redirect to login page with a redirect parameter back to this movie page
+            const currentPath = `/movieInfo/${id}`;
+            router.push(`/login?redirect=${encodeURIComponent(currentPath)}`);
+            return;
+        }
+        
+        // If user is authenticated, proceed to checkout
         console.log(`Booking tickets for showtime: ${showtimeId}`);
         router.push(`/checkout?movieId=${id}&showtimeId=${showtimeId}`);
     };
 
     const handleGenericBooking = () => {
+        if (!isAuthenticated) {
+            // Redirect to login page with a redirect parameter back to this movie page
+            const currentPath = `/movieInfo/${id}`;
+            router.push(`/login?redirect=${encodeURIComponent(currentPath)}`);
+            return;
+        }
+        
         console.log(`Generic booking for movie: ${id}`);
         router.push(`/checkout?movieId=${id}`);
     };
 
-    if (loading) return <div className="text-center p-8">
+    if (loading || authChecking) return <div className="text-center p-8">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
         <p className="text-gray-700">Loading movie information...</p>
     </div>;
@@ -144,6 +181,23 @@ export default function MovieInfo() {
                 <p>{movie.synopsis || "No synopsis provided."}</p>
             </div>
 
+            {/* Display genres */}
+            {movie.genres && movie.genres.length > 0 && (
+                <div className="p-8">
+                    <h1 className="text-xl mb-2 font-bold">Genres</h1>
+                    <div className="flex flex-wrap gap-2">
+                        {movie.genres.map((genre, index) => (
+                            <span 
+                                key={index} 
+                                className="bg-red-800 bg-opacity-30 text-white px-3 py-1 rounded-full text-sm"
+                            >
+                                {genre}
+                            </span>
+                        ))}
+                    </div>
+                </div>
+            )}
+
             <div className="p-8">
                 <div className="grid grid-cols-3 gap-4">
                     <div className="col-span-full">
@@ -177,6 +231,14 @@ export default function MovieInfo() {
             {/* Showtimes Section */}
             <div className="p-8">
                 <h1 className="text-xl font-bold mb-4">Showtimes</h1>
+                {!isAuthenticated && (
+                    <div className="mb-4 p-4 bg-yellow-50 border border-yellow-400 rounded-lg">
+                        <p className="text-yellow-800">
+                            Please <button onClick={() => router.push(`/login?redirect=${encodeURIComponent(`/movieInfo/${id}`)}`)} className="font-bold text-blue-600 hover:underline">log in</button> to book tickets.
+                        </p>
+                    </div>
+                )}
+                
                 {showtimes && showtimes.length > 0 ? (
                     <div className="flex flex-wrap gap-4">
                         {showtimes.map((showtime, index) => (
@@ -193,6 +255,7 @@ export default function MovieInfo() {
                                         'No date'}
                                 </div>
                                 <div>{showtime.time || 'No time'}</div>
+                                <div>Auditorium: {showtime.auditorium}</div>
                                 <div>${showtime.price || "10"}</div>
                             </div>
                         ))}
@@ -205,9 +268,13 @@ export default function MovieInfo() {
             <div className="p-8">
                 <button 
                     onClick={handleGenericBooking} 
-                    className="bg-blue-500 hover:bg-blue-600 text-white p-4 rounded-lg font-semibold transition-colors"
+                    className={`${
+                        isAuthenticated 
+                            ? 'bg-blue-500 hover:bg-blue-600' 
+                            : 'bg-gray-400'
+                    } text-white p-4 rounded-lg font-semibold transition-colors`}
                 >
-                    Book Tickets Now
+                    {isAuthenticated ? 'Book Tickets Now' : 'Login to Book Tickets'}
                 </button>
             </div>
         </div>

@@ -15,9 +15,18 @@ const ManageMovies = () => {
         producer: "",
         rating: "",
         year: "",
+        genres: ["Action", "Adventure"], // Added genres array
         cast: [{ name: "" }]
     });
     const [deleteConfirmation, setDeleteConfirmation] = useState(null);
+    
+    // Available genres
+    const availableGenres = [
+        "Action", "Adventure", "Animation", "Comedy", "Crime", 
+        "Documentary", "Drama", "Family", "Fantasy", "Horror", 
+        "Musical", "Mystery", "Romance", "Sci-Fi", "Thriller", 
+        "War", "Western"
+    ];
     
     // Showtimes state
     const [selectedMovieId, setSelectedMovieId] = useState("");
@@ -30,6 +39,25 @@ const ManageMovies = () => {
     });
     const [showtimes, setShowtimes] = useState({});
     const [showtimeErrors, setShowtimeErrors] = useState({});
+
+    // Handle genre selection
+    const handleGenreChange = (e) => {
+        const genre = e.target.value;
+        if (genre && !newMovie.genres.includes(genre) && genre !== "") {
+            setNewMovie(prev => ({
+                ...prev,
+                genres: [...prev.genres, genre]
+            }));
+        }
+    };
+
+    // Remove genre
+    const removeGenre = (genre) => {
+        setNewMovie(prev => ({
+            ...prev,
+            genres: prev.genres.filter(g => g !== genre)
+        }));
+    };
 
     // Add new cast member
     const addCastMember = () => {
@@ -75,6 +103,64 @@ const ManageMovies = () => {
             [id]: value
         }));
     };
+
+    async function handleSubmit(e) {
+        e.preventDefault();
+        const newErrors = {};
+        
+        // Validate required fields
+        if (!newMovie.title) newErrors.title = "Title is required";
+        if (!newMovie.posterUrl) newErrors.posterUrl = "Poster URL is required";
+        if (!newMovie.synopsis) newErrors.synopsis = "Synopsis is required";
+        if (!newMovie.duration) newErrors.duration = "Duration is required";
+        if (!newMovie.director) newErrors.director = "Director is required";
+        if (!newMovie.year) newErrors.year = "Year is required";
+        if (newMovie.genres.length === 0) newErrors.genres = "At least one genre is required";
+        
+        // Validate cast members
+        newMovie.cast.forEach((member, index) => {
+            if (!member.name) {
+                newErrors[`cast-${index}-name`] = "Actor name is required";
+            }
+        });
+        
+        setErrors(newErrors);
+        if (Object.keys(newErrors).length > 0) return;
+        
+        try {
+            const response = await fetch('/api/movies', {
+                method: 'POST',
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(newMovie)
+            });
+            
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || "Failed to add movie");
+            }
+            
+            // Reset form and refresh movies
+            setNewMovie({
+                title: "",
+                trailerUrl: "",
+                posterUrl: "",
+                synopsis: "",
+                duration: "",
+                status: "showing_now",
+                director: "",
+                producer: "",
+                rating: "",
+                year: "",
+                genres: ["Action", "Adventure"],
+                cast: [{ name: "" }]
+            });
+            
+            await fetchMovies();
+        } catch (error) {
+            console.error("Error adding movie:", error);
+            setErrors({ submit: error.message });
+        }
+    }
 
     // Fetch movies on mount
     useEffect(() => {
@@ -165,80 +251,62 @@ const ManageMovies = () => {
         }
     }
 
-    async function handleSubmit(e) {
+    async function handleShowtimeSubmit(e) {
         e.preventDefault();
-        console.log("Form submitted, validating...");
         const newErrors = {};
-
+      
         // Validate required fields
-        if (!newMovie.title.trim()) newErrors.title = "Title is required";
-        if (!newMovie.trailerUrl.trim()) newErrors.trailerUrl = "Trailer URL is required";
-        if (!newMovie.synopsis.trim()) newErrors.synopsis = "Synopsis is required";
-        if (!newMovie.duration.trim()) newErrors.duration = "Duration is required";
-        if (!newMovie.posterUrl.trim()) newErrors.posterUrl = "Poster url is required";
-        if (!newMovie.director.trim()) newErrors.director = "Director is required";
-        if (!newMovie.producer.trim()) newErrors.producer = "Producer is required";
-        if (!newMovie.year.trim()) newErrors.year = "Year is required";
-        // Validate cast members
-        newMovie.cast.forEach((member, index) => {
-            if (!member.name.trim()) {
-                newErrors[`cast-${index}-name`] = "Actor name is required";
-            }
-        });
-
-        setErrors(newErrors);
+        if (!selectedMovieId) newErrors.movieId = "Please select a movie";
+        if (!newShowtime.date) newErrors.date = "Date is required";
+        if (!newShowtime.time) newErrors.time = "Time is required";
+        if (!newShowtime.auditorium) newErrors.auditorium = "Auditorium is required";
+        if (!newShowtime.price) newErrors.price = "Price is required";
+      
+        setShowtimeErrors(newErrors);
         if (Object.keys(newErrors).length > 0) return;
-
-        console.log("Validation passed, preparing payload...");
-
+      
         try {
-            // Filter out empty cast members
-            const payload = {
-                ...newMovie,
-                cast: newMovie.cast.filter(member => member.name.trim())
-            };
-
-            console.log("Sending payload:", payload);
-
-            const response = await fetch('/api/movies', {
-                method: 'POST',
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload)
-            });
-
-            console.log("Response status:", response.status);
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message);
+          const payload = {
+            ...newShowtime,
+            movieId: selectedMovieId
+          };
+      
+          const response = await fetch('/api/showtimes', {
+            method: 'POST',
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          });
+      
+          const result = await response.json();
+      
+          if (!response.ok) {
+            // Handle conflict error specially to show a more detailed message
+            if (response.status === 409) {
+              setShowtimeErrors({ 
+                submit: result.message || "Scheduling conflict detected. Please choose a different time or auditorium."
+              });
+            } else {
+              setShowtimeErrors({ submit: result.message || "Failed to add showtime" });
             }
-            const responseData = await response.json();
-            console.log("Success response:", responseData);
-            await fetchMovies();
-            // Reset form but keep one empty cast member
-            setNewMovie({
-                title: "",
-                trailerUrl: "",
-                posterUrl: "",
-                synopsis: "",
-                duration: "",
-                status: "showing_now",
-                director: "",
-                producer: "",
-                rating: "",
-                year: "",
-                cast: [{ name: ""}]
-            });
+            return;
+          }
+      
+          // Reset form and refresh showtimes
+          await fetchShowtimes();
+          setNewShowtime({
+            date: "",
+            time: "",
+            auditorium: "1",
+            price: "12.50"
+          });
+          
+          // Keep the selected movie but hide the form
+          setShowShowtimesForm(false);
         } catch (error) {
-            console.error("Error adding movie:", error);
-            setErrors({ submit: error.message });
-            
+          console.error("Error adding showtime:", error);
+          setShowtimeErrors({ submit: error.message });
         }
-
-        if (errors.submit) {
-            alert(`Failed to add movie: ${errors.submit}`);
-        }
-    }
+      }
 
     async function handleShowtimeSubmit(e) {
         e.preventDefault();
@@ -338,6 +406,20 @@ const ManageMovies = () => {
                                 <div className="p-4 text-white">
                                     <h3 className="text-xl font-bold mb-2">{movie.title} ({movie.year})</h3>
                                     <p className="text-sm mb-2">{movie.duration} | {movie.rating}</p>
+                                    
+                                    {/* Display genres */}
+                                    {movie.genres && movie.genres.length > 0 && (
+                                        <div className="mb-2">
+                                            <div className="flex flex-wrap gap-1">
+                                                {movie.genres.map(genre => (
+                                                    <span key={genre} className="bg-red-800/30 px-2 py-0.5 rounded text-xs">
+                                                        {genre}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                    
                                     <p className="text-sm mb-4 line-clamp-2">{movie.synopsis}</p>
                                     
                                     {/* Showtimes section */}
@@ -541,6 +623,40 @@ const ManageMovies = () => {
                             {errors.year && <p className="text-red-500 text-sm">{errors.year}</p>}
                         </div>
 
+                        {/* Genres Selection */}
+                        <div className="p-4">
+                            <label className="block mb-2">Genres:</label>
+                            <div className="flex flex-wrap gap-2 mb-2">
+                                {newMovie.genres.map(genre => (
+                                    <div key={genre} className="bg-red-900 text-white px-3 py-1 rounded-full flex items-center">
+                                        <span>{genre}</span>
+                                        <button
+                                            type="button"
+                                            onClick={() => removeGenre(genre)}
+                                            className="ml-2 text-white hover:text-red-200"
+                                        >
+                                            ×
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                            <select
+                                onChange={handleGenreChange}
+                                value=""
+                                className="w-full text-black border border-gray-400 rounded-lg p-2"
+                            >
+                                <option value="">Select a genre to add</option>
+                                {availableGenres
+                                    .filter(genre => !newMovie.genres.includes(genre))
+                                    .map(genre => (
+                                        <option key={genre} value={genre}>
+                                            {genre}
+                                        </option>
+                                    ))}
+                            </select>
+                            {errors.genres && <p className="text-red-500 text-sm mt-1">{errors.genres}</p>}
+                        </div>
+
                         {/* Trailer URL */}
                         <div className="p-4">
                             <label>Trailer URL: </label>
@@ -590,7 +706,6 @@ const ManageMovies = () => {
                             />
                             {errors.duration && <p className="text-red-500 text-sm">{errors.duration}</p>}
                         </div>
-
 
                         {/* Status - Changed to select for better UX */}
                         <div className="p-4">
