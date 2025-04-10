@@ -7,7 +7,6 @@ export default function Home() {
     <div>
       <LoggedinHome />
       <SearchMovies />
-      <ComingSoon />
     </div>
   );
 }
