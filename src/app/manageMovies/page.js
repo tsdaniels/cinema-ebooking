@@ -19,6 +19,34 @@ const ManageMovies = () => {
         cast: [{ name: "" }]
     });
     const [deleteConfirmation, setDeleteConfirmation] = useState(null);
+
+    // delete 
+    const handleDelete = async (id) => {
+        try {
+         
+          const response = await fetch(`/api/movies/${id}`, {
+            method: "DELETE",
+          });
+      
+         
+          if (!response.ok) {
+            const errorData = await response.json();
+            console.error("Error deleting movie:", errorData);
+            return;
+          }
+      
+          // Parse the response data (success case)
+          const data = await response.json();
+          console.log("Movie deleted:", data.message);
+      
+          // Optionally, update the UI or state to reflect the deleted movie
+          // For example, you can filter the movies array to remove the deleted movie
+          setMovies(prevMovies => prevMovies.filter(movie => movie._id !== id));
+        } catch (error) {
+          console.error("Error handling delete:", error);
+        }
+      };
+      
     
     // Available genres
     const availableGenres = [
@@ -202,54 +230,32 @@ const ManageMovies = () => {
         }
     }
 
-    async function handleDelete(movieId) {
-        try {
-            const response = await fetch(`/api/movies/${movieId}`, {
-                method: 'DELETE',
-            });
-            
-            if (!response.ok) {
-                // Check if there's content to parse as JSON
-                const contentType = response.headers.get("content-type");
-                if (contentType && contentType.includes("application/json")) {
-                    try {
-                        const errorData = await response.json();
-                        throw new Error(errorData.message || "Failed to delete movie");
-                    } catch (jsonError) {
-                        throw new Error(`Failed to delete movie: ${response.status} ${response.statusText}`);
-                    }
-                } else {
-                    throw new Error(`Failed to delete movie: ${response.status} ${response.statusText}`);
-                }
-            }
-            
-            // Refresh the movie list after deletion
-            await fetchMovies();
-            setDeleteConfirmation(null);
-        } catch (error) {
-            console.error("Error deleting movie:", error);
-            setErrors({ delete: error.message });
-        }
-    }
+    
 
-    async function handleDeleteShowtime(showtimeId) {
+    const handleDeleteShowtime = async (id) => {
         try {
-            const response = await fetch(`/api/showtimes/${showtimeId}`, {
-                method: 'DELETE',
-            });
-            
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || "Failed to delete showtime");
-            }
-            
-            // Refresh showtimes
-            await fetchShowtimes();
+          const response = await fetch(`/api/showtimes/${id}`, {
+            method: "DELETE",
+          });
+      
+          // Log the raw response to debug
+          console.log("Response status:", response.status);
+          const responseText = await response.text();  // Read the raw response text
+          console.log("Response body:", responseText);
+      
+          if (!response.ok) {
+            const errorData = responseText ? JSON.parse(responseText) : { error: 'Unknown error' };  // Ensure we parse only if there's content
+            console.error("Error deleting showtime:", errorData);
+            return;
+          }
+      
+          const data = JSON.parse(responseText);  // Parse the JSON from response
+          console.log("Showtime deleted:", data.message);
         } catch (error) {
-            console.error("Error deleting showtime:", error);
-            setShowtimeErrors({ delete: error.message });
+          console.error("Error handling delete:", error);
         }
-    }
+      };
+      
 
     async function handleShowtimeSubmit(e) {
         e.preventDefault();
