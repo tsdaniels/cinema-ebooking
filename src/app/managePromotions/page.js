@@ -1,5 +1,4 @@
 'use client';
-
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { FaTrash, FaMoneyBill, FaPen, FaTimes } from "react-icons/fa";
