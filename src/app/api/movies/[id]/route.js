@@ -1,10 +1,10 @@
-import dbConnect from '../../../../libs/mongodb';
+import connectMongoDB from '../../../../libs/mongodb';
 import  Movie  from '../../../../models/movieSchema';
 
 export async function GET(req, { params }) {
     const { id } = params;
 
-    await dbConnect();
+    await connectMongoDB();
 
     try {
         const movie = await Movie.findById(id); 
