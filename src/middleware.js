@@ -12,7 +12,7 @@ export async function middleware(request) {
   }
 
   try {
-    // Decode and verify the JWT
+    // decode and load jwt into variable
     const { payload } = await jwtVerify(token, secret);
 
     // if user.role == user, deny access to admin pages and redirect to admin login
