@@ -1,11 +1,11 @@
 // app/api/bookings/route.js
 import { NextResponse } from 'next/server';
-import connectDB from '../../../libs/mongodb';
+import connectMongoDB from '../../../libs/mongodb';
 import { Booking } from '../../../models/bookingSchema';
 
 export async function POST(request) {
   try {
-    await connectDB();
+    await connectMongoDB();
 
     // Parse the request body to extract booking details
     const { movieId, showtimeId, seats, tickets, totalPrice, paymentInfo, customerName, customerEmail, userId } = await request.json();
