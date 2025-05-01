@@ -1,6 +1,7 @@
 // app/api/checkAuth/route.js
 import { NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
+import { User } from '@/models/userSchema';
 
 export async function GET(request) {
   // Get the auth cookie
@@ -16,7 +17,8 @@ export async function GET(request) {
     
     return NextResponse.json({ 
       isLoggedIn: true,
-      email: decoded.email 
+      email: decoded.email,
+      isAdmin: User.isAdmin 
     });
   } catch (error) {
     return NextResponse.json({ isLoggedIn: false }, { status: 401 });

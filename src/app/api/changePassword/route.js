@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import connectMongoDB from '@/libs/mongodb';
 import { User } from '@/models/userSchema';
+import { Admin } from '@/models/adminSchema';
 import nodemailer from 'nodemailer';
 import bcrypt from 'bcryptjs';
 
@@ -9,7 +10,7 @@ export async function PUT(request) {
     try {
         await connectMongoDB();
        
-        const { email, password } = await request.json();
+        const { email, password, isAdmin } = await request.json();
        
         // Input validation
         if (!email || !password) {
@@ -27,10 +28,31 @@ export async function PUT(request) {
             email: email,
         });
 
+        let userOrAdmin;
+        // Determine whether to look for a user or an admin
+        if (isAdmin) {
+            // If it's an admin password change, find the admin by email
+            userOrAdmin = await Admin.findOne({ email });
+            if (!userOrAdmin) {
+                return NextResponse.json({
+                    success: false,
+                    error: "Admin not found"
+                }, { status: 404 });
+            }
+        } else {
+            // If it's a user password change, find the user by email
+            userOrAdmin = await User.findOne({ email });
+            if (!userOrAdmin) {
+                return NextResponse.json({
+                    success: false,
+                    error: "User not found"
+                }, { status: 404 });
+            }
+        }
 
-        // Update user password
-        user.password = hashedPassword;
-        await user.save();
+        // Update password
+        userOrAdmin.password = hashedPassword;
+        await userOrAdmin.save();
 
         // Set up email transport
         const transporter = nodemailer.createTransport({

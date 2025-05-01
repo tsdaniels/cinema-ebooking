@@ -1,4 +1,4 @@
-// File: app/api/movies/route.js
+// File: app/api/fetchProfile/route.js
 import { NextResponse } from 'next/server';
 import connectDB from '@/libs/mongodb';
 import { Profile } from '@/models/profileSchema';

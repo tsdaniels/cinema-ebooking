@@ -8,8 +8,9 @@ export default function ManageUsers() {
     const router = useRouter();
     const [users, setUsers] = useState([]);
     const [showModal, setShowModal] = useState(false);
-    const [newUser, setNewUser] = useState({ firstName: '', lastName: '', email: '', password: '', role: 'User' });
+    const [newUser, setNewUser] = useState({ firstName: '', lastName: '', email: '', role: 'User', status: 'active' });
     const [loading, setLoading] = useState(true);
+    const [message, setMessage] = useState({ text: '', type: '' });
 
     useEffect(() => {
         async function fetchUsers() {
@@ -36,24 +37,44 @@ export default function ManageUsers() {
 
     const handleAddUser = async () => {
         try {
-            console.log(newUser);
             const res = await fetch('/api/addUser', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(newUser),
             });
-
+    
             const data = await res.json();
             if (data.success) {
-                setUsers([...users, data.user]);
+                setUsers((prevUsers) => [...prevUsers, data.user]);
                 setShowModal(false);
-                setNewUser({ firstName: '', lastName: '', email: '', role: 'User' });
-                console.log("Saving user:", newUser);
+                setNewUser({ firstName: '', lastName: '', email: '', role: 'User', status: 'active' });
+                setMessage({ text: 'User added successfully and email sent!', type: 'success' });
             } else {
                 console.error("Error:", data.message);
+                setMessage({ text: data.message || 'Failed to add user', type: 'error' });
             }
         } catch (error) {
             console.error("Error adding user:", error);
+            setMessage({ text: 'An error occurred while adding the user', type: 'error' });
+        }
+    };
+
+    const handleDeleteUser = async (email) => {
+        try {
+            const res = await fetch(`/api/deleteUser/`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email }), 
+            });
+    
+            const data = await res.json();
+            if (data.success) {
+                setUsers((prevUsers) => prevUsers.filter((user) => user.email !== email)); 
+            } else {
+                console.error("Error deleting user:", data.message);
+            }
+        } catch (error) {
+            console.error("Error deleting user:", error);
         }
     };
 
@@ -69,6 +90,12 @@ export default function ManageUsers() {
         <div className="relative w-full min-h-screen bg-gradient-to-br from-black via-red-950 to-red-900 overflow-hidden">
             <h1 className="flex justify-center font-sans text-3xl text-white mt-3 pt-3 font-bold">Manage Users</h1>
             
+            {message.text && (
+                <div className={`p-2 mb-4 text-sm rounded ${message.type === 'success' ? 'bg-green-600' : 'bg-red-600'}`}>
+                    {message.text}
+                </div>
+            )}
+
             <div className="flex flex-col bg-black bg-opacity-35 backdrop-blur-lg font-bold font-sans min-h-1/2 rounded-lg m-6 ml-16 mr-16 border-black p-6">
                 <div className="flex justify-end mb-4">
                     <button 
@@ -85,23 +112,29 @@ export default function ManageUsers() {
                             <th className="border border-gray-600 p-3">Name</th>
                             <th className="border border-gray-600 p-3">Email</th>
                             <th className="border border-gray-600 p-3">Role</th>
+                            <th className="border border-gray-600 p-3">Status</th>
                             <th className="border border-gray-600 p-3">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {users.length > 0 ? (
-                            users.map((user, index) => (
-                                <tr key={index} className="text-center bg-gray-700 odd:bg-gray-800">
+                            users.map(user => (
+                                <tr key={user._id} className="text-center bg-gray-700 odd:bg-gray-800">
                                     <td className="border border-gray-600 p-3">
                                         {user.firstName || "N/A"} {user.lastName || ""}
                                     </td>
                                     <td className="border border-gray-600 p-3">{user.email}</td>
                                     <td className="border border-gray-600 p-3">{user.role || "User"}</td>
-                                    <td className="border border-gray-600 p-3 flex justify-center space-x-4">
-                                        <button className="text-yellow-400 hover:text-yellow-300 transition">
-                                            <FaUserEdit size={20} />
+                                    <td className="border border-gray-600 p-3">
+                                        <button className='text-green-500'>
+                                            {user.status === "active" ? "Suspend" : "Activate"}
                                         </button>
-                                        <button className="text-red-500 hover:text-red-400 transition">
+                                    </td>
+                                    <td className='border border-gray-600 p-3 flex justify-center space-x-4'>
+                                        {/* <button className="text-yellow-400 hover:text-yellow-300 transition">
+                                            <FaUserEdit size={20} />
+                                        </button> */}
+                                        <button onClick={() => handleDeleteUser(user.email)} className="text-red-500 hover:text-red-400 transition">
                                             <FaUserMinus size={20} />
                                         </button>
                                     </td>
@@ -128,7 +161,6 @@ export default function ManageUsers() {
                             <input type="text" name="firstName" value={newUser.firstName} onChange={handleChange} placeholder="First Name" className="w-full p-2 mb-2 bg-gray-800 border border-gray-600 rounded"/>
                             <input type="text" name="lastName" value={newUser.lastName} onChange={handleChange} placeholder="Last Name" className="w-full p-2 mb-2 bg-gray-800 border border-gray-600 rounded"/>
                             <input type="email" name="email" value={newUser.email} onChange={handleChange} placeholder="Email" className="w-full p-2 mb-2 bg-gray-800 border border-gray-600 rounded"/>
-                            <input type="email" name="password" value={newUser.password} onChange={handleChange} placeholder="Password" className="w-full p-2 mb-2 bg-gray-800 border border-gray-600 rounded"/>
                             <select name="role" value={newUser.role} onChange={handleChange} className="w-full p-2 mb-4 bg-gray-800 border border-gray-600 rounded">
                                 <option value="User">User</option>
                                 <option value="Admin">Admin</option>

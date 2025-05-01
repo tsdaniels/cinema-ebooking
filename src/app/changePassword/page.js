@@ -6,6 +6,7 @@ export default function changePassword() {
   
   const [isLoading, setIsLoading] = useState(true);
   const [verified, setVerified] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -24,6 +25,7 @@ export default function changePassword() {
           
           if (data.isLoggedIn) {
             setEmail(data.email);
+            setIsAdmin(data.isAdmin)
           } else {
             // Redirect to login if not authenticated
             router.push('/login');
@@ -115,7 +117,8 @@ export default function changePassword() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 email: email, 
-                password: newPassword 
+                password: newPassword ,
+                isAdmin: isAdmin
             }),
         });
 

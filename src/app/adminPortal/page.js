@@ -8,8 +8,20 @@ import { FaUsers } from "react-icons/fa";
 export default function AdminPortal() {
     const router = useRouter();
 
+    const handleLogout = () => {
+        localStorage.removeItem("authToken"); 
+    
+        router.push("/adminLogin"); 
+    };
+
     return(
         <div className="relative w-full min-h-screen bg-gradient-to-br from-black via-red-950 to-red-900 overflow-hidden">
+            <button 
+                onClick={handleLogout}
+                className="absolute font-sans top-4 right-4 bg-red-500 text-white p-2 text-2xl rounded-lg shadow-lg hover:bg-red-600 transition-all duration-300">
+                Logout
+            </button>
+            
             <h1 className='flex justify-center font-sans text-3xl text-white mt-3 pt-3 font-bold'>Admin Portal</h1>
             <div className="flex flex-row bg-black bg-opacity-35 backdrop-blur-lg font-bold font-sans min-h-1/2 rounded-lg m-6 ml-16 mr-16 border-black">
 
