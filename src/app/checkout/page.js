@@ -29,14 +29,11 @@ const fetchShowtimeById = async (movieId, showtimeId) => {
 
 const checkAuth = async () => {
   try {
-    const response = await fetch("/api/checkAuth", {
-      credentials: "include",
-    });
+    const response = await fetch("/api/auth/check");
     if (!response.ok) {
       return { isAuthenticated: false, user: null };
     }
-    const result = await response.json();
-    return { isAuthenticated: result.isLoggedIn, user: result };
+    return await response.json();
   } catch (error) {
     console.error("Auth check error:", error);
     return { isAuthenticated: false, user: null };
