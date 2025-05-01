@@ -12,9 +12,9 @@ export default function CardsTwo({ title, trailerUrl}){
                 <h2 className="text-xl font-bold text-white">{title}</h2>
                 <span className="text-sm text-red-400 font-medium">Release Date</span>
             </div>
-            <div className="aspect-video relative">
+            <div className="aspect-video relative flex flex-col">
                 <iframe
-                    className='w-[full] h-[100px]'
+                    className='w-[full] h-[300]'
                     src={trailerUrl}
                     allowFullScreen
                 ></iframe>

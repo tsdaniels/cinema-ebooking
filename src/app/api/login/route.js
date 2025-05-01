@@ -45,7 +45,7 @@ export async function POST(request) {
 
         // Generate JWT token
         const token = jwt.sign(
-            { userId: user._id, email: user.email },
+            { userId: user._id, email: user.email, role: "user" },
             process.env.JWT_SECRET,
             { expiresIn: '24h' }
         );
@@ -61,6 +61,7 @@ export async function POST(request) {
             name: "auth_token",
             value: token,
             httpOnly: true,
+            path: '/',
         });
 
         return response;

@@ -40,7 +40,7 @@ export default function AdminPortal() {
                     <i className="mx-auto mt-5"><MdMovieCreation size={70}/></i>
                 </button>
                 <button 
-                    onClick={() => router.push('/')}
+                    onClick={() => router.push('/managePromotions')}
                     className="flex flex-col border-2 bg-gradient-to-b from-orange-400 to-orange-200 border-black p-16 w-1/3 m-12 mt-20 mb-20 text-2xl text-center rounded-lg
                         hover:from-orange-500 hover:to-orange-300 hover:scale-105 hover:shadow-lg transition-all duration-300">
                     <p>Manage Promotions</p>
