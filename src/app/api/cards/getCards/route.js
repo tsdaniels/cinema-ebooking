@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server';
-import connectDB from '@/libs/mongodb';
-import { Card } from '@/models/paymentSchema';
-import encryption from '@/utils/encryption';
+import connectMongoDB from '../../../../libs/mongodb';
+import { Card } from '../../../../models/paymentSchema';
+import encryption from '../../../../utils/encryption';
 
 export async function POST(request) {
   try {
-    await connectDB();
+    await connectMongoDB();
     const { email } = await request.json();
    
     if (!email) {
