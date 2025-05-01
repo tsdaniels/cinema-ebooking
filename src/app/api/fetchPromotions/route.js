@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import connectMongoDB from '@/libs/mongodb';
-import { Promotion } from '@/models/promotionSchema';
+import connectMongoDB from '../../../libs/mongodb';
+import { Promotion } from '../../../models/promotionSchema';
 
 export async function GET() {
     try {

@@ -33,7 +33,7 @@ export default function AdminPortal() {
                     <i className="mx-auto mt-5"><FaUsers size={70}/></i>
                 </button>
                 <button 
-                    onClick={() => router.push('/')}
+                    onClick={() => router.push('/manageMovies')}
                     className="flex flex-col border-2 bg-gradient-to-b from-yellow-400 to-yellow-200 border-2 border-black p-16 w-1/3 inline-block m-12 mt-20 mb-20 text-2xl text-center rounded-lg
                         hover:from-yellow-500 hover:to-yellow-300 hover:scale-105 hover:shadow-lg transition-all duration-300">
                     <p>Manage Movies</p>
