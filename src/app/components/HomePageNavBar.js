@@ -82,21 +82,7 @@ export default function HomePageNavbar() {
     <nav className="flex justify-center items-center z-50 fixed top-0 bg-red-900 w-full h-[95px]">
       <div className="text-white text-4xl ml-4 font-semibold">Cinebook🍿</div>
         <div className="flex items-center gap-4 ml-auto">
-          <form onSubmit={handleSearch} className="flex items-center gap-2">
-            <input
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              className="flex-1 w-4/5 h-10 rounded-lg shadow border border-gray-200 text-black px-4"
-              placeholder="Search Movies..."
-            />
-            <button
-              type="submit"
-              className="px-4 bg-black h-10 text-white rounded-md hover:bg-red-800 transition-colors"
-            >
-              Search
-            </button>
-          </form>
+          
         </div>
       <div
         className="relative bg-white w-[50px] h-[50px] rounded-full cursor-pointer ml-10 mr-4"
