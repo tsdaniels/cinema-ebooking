@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import connectMongoDB from '../../../../libs/mongodb';
 import { Booking } from '../../../../models/bookingSchema';
 import mongoose from 'mongoose';
+import { sendBookingConfirmation } from '../../email/orderConfirmation/route';
 
 export async function GET(request, { params }) {
   const bookingId = params.id; // since the file is named [id], we use params.id
@@ -52,6 +53,8 @@ export async function GET(request, { params }) {
       bookingDate: booking.bookingDate || booking.createdAt,
       status: booking.status,
     };
+
+    await sendBookingConfirmation(booking.customerEmail, bookingId);
 
     return NextResponse.json(bookingData);
   } catch (error) {
