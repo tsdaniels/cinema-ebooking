@@ -1,12 +1,7 @@
 'use client';
 
-<<<<<<< HEAD
-import { useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
-=======
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
->>>>>>> Simone
 
 const fetchShowtimes = async (movieId) => {
   try {
@@ -47,18 +42,9 @@ const checkAuth = async () => {
 
 export default function Checkout() {
   const router = useRouter();
-<<<<<<< HEAD
-  const [isBlue, setIsBlue] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [selectedShowtime, setSelectedShowtime] = useState(null);
-  const [tickets, setTickets] = useState({ adult: 0, child: 0, senior: 0 });
-  const [selectedSeats, setSelectedSeats] = useState([]);
-  const ticketPrices = { adult: 12.99, child: 9.99, senior: 10.99 };
-=======
   const searchParams = useSearchParams();
   const movieId = searchParams.get('movieId');
   const showtimeId = searchParams.get('showtimeId');
->>>>>>> Simone
   
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -148,49 +134,6 @@ export default function Checkout() {
     }
   };
 
-<<<<<<< HEAD
-  useEffect(() => {
-    async function checkAuth() {
-      try {
-        const response = await fetch('/api/checkAuth');
-        const data = await response.json();
-
-        if (data.isLoggedIn) {
-          setIsLoggedIn(true);
-        } else {
-          setIsLoggedIn(false);
-        }
-      } catch (error) {
-        console.error('Authentication check failed:', error);
-        setError("Authentication failed. Please log in again.");
-        setIsLoggedIn(false);
-      }
-    }
-    checkAuth();
-  }, [router]);
-
-  if (!isLoggedIn) {
-    return (
-      <div className="flex bg-gradient-to-br from-black via-red-950 to-red-900 text-white h-screen p-6 gap-6 pt-6">
-        <div className="w-full flex flex-col items-center justify-center bg-black bg-opacity-35 backdrop-blur-lg font-bold font-sans rounded-lg m-6 ml-16 mr-16 p-8">
-          <h2 className="text-4xl font-bold text-red-500">Login Required</h2>
-          <p className="text-xl text-white mt-4">
-            You need to log in to proceed with the checkout and purchase your tickets.
-          </p>
-          <div className="mt-6">
-            <button 
-              onClick={() => router.push('/login')} 
-              className="px-6 py-3 text-lg text-white bg-red-700 hover:bg-red-800 rounded-md">
-              Login
-            </button>
-            <button 
-              onClick={() => router.push('/')} 
-              className="ml-4 px-6 py-3 text-lg text-white bg-gray-700 hover:bg-gray-600 rounded-md">
-              Return to Homepage
-            </button>
-          </div>
-        </div>
-=======
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
@@ -247,13 +190,10 @@ export default function Checkout() {
           <div className="h-64 bg-gray-200 rounded mb-4"></div>
         </div>
         <p>Loading checkout information...</p>
->>>>>>> Simone
       </div>
     );
   }
 
-<<<<<<< HEAD
-=======
   if (error && showtimes.length === 0) {
     return (
       <div className="w-full p-8 text-center">
@@ -271,7 +211,6 @@ export default function Checkout() {
 
   const seatOptions = generateSeatOptions();
 
->>>>>>> Simone
   return (
     <div className="w-full p-8 max-w-4xl mx-auto">
       <h1 className="text-2xl font-bold">Checkout</h1>
@@ -304,17 +243,7 @@ export default function Checkout() {
         >
           Complete Booking
         </button>
-<<<<<<< HEAD
-        <button 
-          onClick={() => {router.push(isLoggedIn ? '/home' : '/');}}
-          className="mt-3 p-2 bg-gray-700 rounded mr-3 w-full hover:bg-gray-600 transition-colors duration-300"
-        >
-          Cancel
-        </button>
-      </div>
-=======
       </form>
->>>>>>> Simone
     </div>
   );
 }

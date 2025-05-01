@@ -1,7 +1,7 @@
 // app/api/checkAuth/route.js
 import { NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
-import { User } from '@/models/userSchema';
+import { User } from '../../../models/userSchema';
 
 export async function GET(request) {
   // Get the auth cookie
