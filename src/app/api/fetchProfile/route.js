@@ -1,7 +1,7 @@
 // File: app/api/fetchProfile/route.js
 import { NextResponse } from 'next/server';
-import connectDB from '@/libs/mongodb';
-import { Profile } from '@/models/profileSchema';
+import connectDB from '../../../libs/mongodb';
+import { Profile } from '../../../models/profileSchema';
 
 export async function POST(request) {
     try {

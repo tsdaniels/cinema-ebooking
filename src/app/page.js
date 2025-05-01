@@ -12,7 +12,6 @@ export default function Home() {
     <div>
       <HeroSectionHomePage />
       <SearchMovies />
-      <ComingSoon />
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import connectDB from '@/libs/mongodb';
-import { Profile } from '@/models/profileSchema';
+import connectDB from '../../../libs/mongodb';
+import { Profile } from '../../../models/profileSchema';
 
 export async function PUT(request) {
     try {

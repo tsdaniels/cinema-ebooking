@@ -1,7 +1,7 @@
 // app/api/getUsers/route.js
 import { NextResponse } from 'next/server';
-import connectMongoDB from '@/libs/mongodb';
-import { Profile } from '@/models/profileSchema';
+import connectMongoDB from '../../../libs/mongodb';
+import { Profile } from '../../../models/profileSchema';
 
 export async function GET() {
     try {

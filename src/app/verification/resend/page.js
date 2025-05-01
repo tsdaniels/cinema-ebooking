@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
-export default function Resend() {
+export default function Login() {
     const [email, setemail] = useState("");
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
@@ -32,7 +32,7 @@ export default function Resend() {
         }
     };
 
-    const handleResend = async () => {
+    const handleLogin = async () => {
 
         try {
             // Reset error and success messages
@@ -81,7 +81,7 @@ export default function Resend() {
 
         } catch (error) {
             console.error("Error:", error);
-            setError("An error occurred. Please try again");
+            setError("An error occurred during login. Please try again.");
         } finally {
             setIsLoading(false);
         }
@@ -90,7 +90,7 @@ export default function Resend() {
     // Handle Enter key press
     const handleKeyPress = (e) => {
         if (e.key === 'Enter') {
-            handleResend();
+            handleLogin();
         }
     };
 
@@ -141,7 +141,7 @@ export default function Resend() {
 
                         <div>
                             <button
-                                onClick={handleResend}
+                                onClick={handleLogin}
                                 disabled={isLoading}
                                 className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                             >

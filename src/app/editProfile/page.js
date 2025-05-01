@@ -143,26 +143,8 @@ export default function EditProfile() {
       if (!response.ok) throw new Error("Failed to update profile");
       
       const data = await response.json();
-
-      const send = await fetch("/api/email/profileChanged", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          newProfileData: data.profile,
-          email: email
-        }),
-      });
+      console.log("Update successful:", data);
       
-      const result = await send.json();
-
-      if (!result) {
-        throw new Error("There was an error sending the email.");
-      }
-      
-      if (result.success != true) {
-        throw new Error(result.message);
-      }
-
       setSuccess("Profile Successfully Updated!");
       setError("");
       setTimeout(() => {
@@ -191,10 +173,6 @@ export default function EditProfile() {
 
   const handlePayment = () => {
     router.push("/editPayment");
-  };
-
-  const handlePassChange = () => {
-    router.push("/changePassword");
   };
 
   if (isLoading) {
@@ -257,21 +235,6 @@ export default function EditProfile() {
                 <div>
                   <label htmlFor="email" className="block bg-grey-200 text-sm font-medium text-gray-700">Email (can't be changed) </label>
                   <p className="mt-1 block w-full p-2 border bg-gray-200 border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">{email}</p>
-                </div>
-
-                <div>
-                  <label htmlFor="password" className="block bg-grey-200 text-sm font-medium text-gray-700">Password (must verify)</label>
-                  <div className="flex justify-between">
-                    <p className="mt-1 block w-full p-2 border bg-gray-200 border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">• • • • • • • • • •</p>
-                    <button 
-                    className="mt-1 ml-5 pl-5 pr-5 border bg-green-400 border-gray-300 rounded-md text-white"
-                    type="button"
-                    id="changePassword"
-                    onClick={handlePassChange}
-                    >
-                    
-                    Change</button>
-                  </div>
                 </div>
                 
                 <div>
@@ -341,6 +304,11 @@ export default function EditProfile() {
                       className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
                     />
                   </div>
+                </div>
+                              
+                <div>
+                  <label htmlFor="email" className="block bg-grey-200 text-sm font-medium text-gray-700">Email (can't be changed) </label>
+                  <p className="mt-1 block w-full p-2 border bg-gray-200 border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">{email}</p>
                 </div>
                 
                 <div>
