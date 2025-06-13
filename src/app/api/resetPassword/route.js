@@ -53,7 +53,7 @@ export async function POST(request) {
 
         const mailOptions = {
             from: process.env.EMAIL_ADDRESS,
-            to: email,
+            to: user.email,
             subject: 'Password Changed!',
             html: `
                 <h1>Your Password has been changed.</h1>
